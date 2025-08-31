@@ -2,3 +2,5 @@
 db.sqlite3
 *.pyc
 __pycache__/
+CORRECOES_REALIZADAS.md
+INSTRUCOES_MERCADO_PAGO.md
