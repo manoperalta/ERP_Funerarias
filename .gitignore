@@ -4,3 +4,5 @@ db.sqlite3
 __pycache__/
 CORRECOES_REALIZADAS.md
 INSTRUCOES_MERCADO_PAGO.md
+todo.md
+.env
