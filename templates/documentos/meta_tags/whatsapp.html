@@ -1,0 +1,9 @@
+<!-- WhatsApp Meta Tags -->
+<meta property="og:title" content="{{ whatsapp_title|default:'Sistema Funerária' }}">
+<meta property="og:description" content="{{ whatsapp_description|truncate_description:300 }}">
+{% if whatsapp_image %}
+<meta property="og:image" content="{{ whatsapp_image }}">
+{% endif %}
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#25D366">
+

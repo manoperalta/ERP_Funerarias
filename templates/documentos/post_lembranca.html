@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="card shadow-lg p-3 mb-5 bg-white rounded">
+        <div class="card-body text-center">
+            <h1 class="card-title text-primary mb-4">Em Memória</h1>
+            
+            {% if pessoa_falecida.imagem %}
+                <img src="{{ pessoa_falecida.imagem.url }}" class="img-fluid rounded-circle mb-4" alt="Foto do Falecido" style="width: 200px; height: 200px; object-fit: cover;">
+            {% else %}
+                <img src="/static/img/default_profile.png" class="img-fluid rounded-circle mb-4" alt="Foto Padrão" style="width: 200px; height: 200px; object-fit: cover;">
+            {% endif %}
+
+            <h2 class="card-subtitle mb-2 text-muted">{{ pessoa_falecida.nome }}</h2>
+            <p class="card-text lead">"A saudade eterniza a presença de quem se foi."</p>
+            
+            <hr class="my-4">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5 class="text-secondary">Data de Falecimento:</h5>
+                    <p class="fw-bold">{{ pessoa_falecida.data_falecimento|date:"d/m/Y" }}</p>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5 class="text-secondary">Causa do Óbito:</h5>
+                    <p class="fw-bold">{{ pessoa_falecida.causa_obito }}</p>
+                </div>
+            </div>
+
+            {% if agendamento %}
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <h4 class="text-primary mb-3">Detalhes da Cerimônia</h4>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h5 class="text-secondary">Local do Velório:</h5>
+                        <p class="fw-bold">{{ agendamento.local_velorio }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h5 class="text-secondary">Data e Hora do Velório:</h5>
+                        <p class="fw-bold">{{ agendamento.data_agendamento|date:"d/m/Y H:i" }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h5 class="text-secondary">Local do Sepultamento:</h5>
+                        <p class="fw-bold">{{ agendamento.local_sepultamento }}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h5 class="text-secondary">Data e Hora do Sepultamento:</h5>
+                        <p class="fw-bold">{{ agendamento.data_sepultamento|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-warning">Nenhum agendamento encontrado para esta pessoa falecida.</p>
+            {% endif %}
+
+            <div class="mt-5">
+                <a href="#" class="btn btn-outline-primary me-2" onclick="window.print(); return false;">Imprimir / Gerar PDF</a>
+                <a href="#" class="btn btn-outline-success" id="shareWhatsApp">Compartilhar no WhatsApp</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('shareWhatsApp').addEventListener('click', function(e) {
+        e.preventDefault();
+        const nome = "{{ pessoa_falecida.nome }}";
+        const falecimento = "{{ pessoa_falecida.data_falecimento|date:"d/m/Y" }}";
+        const velorio = "{{ agendamento.local_velorio }} em {{ agendamento.data_agendamento|date:"d/m/Y H:i" }}";
+        const sepultamento = "{{ agendamento.local_sepultamento }} em {{ agendamento.data_sepultamento|date:"d/m/Y H:i" }}";
+        
+        let message = `*Em Memória de ${nome}*
+Faleceu em: ${falecimento}
+
+`;
+        if ("{{ agendamento }}") {
+            message += `*Detalhes da Cerimônia:*
+Velório: ${velorio}
+Sepultamento: ${sepultamento}
+
+`;
+        }
+        message += `Para mais informações, acesse: ${window.location.href}`;
+        
+        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+    });
+</script>
+{% endblock %}
+
+

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ pessoa_falecida.nome }} - Sistema de Gestão Funerária{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-person-x"></i> {{ pessoa_falecida.nome }}</h2>
+                <div class="btn-group">
+                    <a href="{% url 'pessoa_falecida:update' pessoa_falecida.pk %}" class="btn btn-warning">
+                        <i class="bi bi-pencil"></i> Editar
+                    </a>
+                    <a href="{% url 'pessoa_falecida:delete' pessoa_falecida.pk %}" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Excluir
+                    </a>
+                    <a href="{% url 'pessoa_falecida:list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-info-circle"></i> Informações da Pessoa Falecida</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong><i class="bi bi-person"></i> Nome:</strong><br>{{ pessoa_falecida.nome }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong><i class="bi bi-people"></i> Família:</strong><br>{{ pessoa_falecida.familia.nome_responsavel }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong><i class="bi bi-calendar"></i> Data de Nascimento:</strong><br>{{ pessoa_falecida.data_nascimento|date:"d/m/Y" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong><i class="bi bi-calendar-x"></i> Data de Falecimento:</strong><br>{{ pessoa_falecida.data_falecimento|date:"d/m/Y" }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong><i class="bi bi-geo-alt"></i> Local do Óbito:</strong><br>{{ pessoa_falecida.local_obito }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong><i class="bi bi-card-text"></i> Documento:</strong><br>{{ pessoa_falecida.documento_cpf_rg }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-12">
+                                    <p><strong><i class="bi bi-clipboard-pulse"></i> Causa do Óbito:</strong><br>{{ pessoa_falecida.causa_obito }}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong><i class="bi bi-hourglass"></i> Idade no Óbito:</strong><br>{{ pessoa_falecida.idade_obito }} anos</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-lightning"></i> Ações Rápidas</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-grid gap-2">
+                                <a href="{% url 'agendamento:create' %}?pessoa={{ pessoa_falecida.pk }}" class="btn btn-outline-primary">
+                                    <i class="bi bi-calendar-plus"></i> Criar Agendamento
+                                </a>
+                                <a href="{% url 'planejamento:create' %}?pessoa={{ pessoa_falecida.pk }}" class="btn btn-outline-success">
+                                    <i class="bi bi-list-check"></i> Criar Planejamento
+                                </a>
+                                <a href="{% url 'servico_contratado:create' %}?pessoa={{ pessoa_falecida.pk }}" class="btn btn-outline-info">
+                                    <i class="bi bi-cart-plus"></i> Contratar Serviço
+                                </a>
+                                <a href="{% url 'financeiro:create' %}?pessoa={{ pessoa_falecida.pk }}" class="btn btn-outline-warning">
+                                    <i class="bi bi-currency-dollar"></i> Registro Financeiro
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

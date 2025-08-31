@@ -1,0 +1,9 @@
+<!-- Twitter Card Meta Tags -->
+<meta name="twitter:card" content="{{ twitter_card|default:'summary_large_image' }}">
+<meta name="twitter:title" content="{{ twitter_title|default:'Sistema Funerária' }}">
+<meta name="twitter:description" content="{{ twitter_description|truncate_description:200 }}">
+{% if twitter_image %}
+<meta name="twitter:image" content="{{ twitter_image }}">
+<meta name="twitter:image:alt" content="{{ twitter_title|default:'Sistema Funerária' }}">
+{% endif %}
+

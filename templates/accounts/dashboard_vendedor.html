@@ -1,0 +1,296 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Vendedor - Sistema Funerária{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .vendedor-header {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    .workflow-step {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        text-align: center;
+        position: relative;
+        margin-bottom: 1rem;
+    }
+    .workflow-step.completed {
+        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+        color: white;
+    }
+    .workflow-step.active {
+        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        color: white;
+    }
+    .step-number {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1rem;
+        font-weight: bold;
+    }
+    .quick-sale-btn {
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    .quick-sale-btn:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="vendedor-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1><i class="bi bi-person-check"></i> Dashboard Vendedor</h1>
+                <p class="mb-0">Bem-vindo, {{ user.get_full_name|default:user.username }}! Gerencie o fluxo completo de sepultamento.</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-outline-light">
+                        <i class="bi bi-person-circle"></i> Perfil
+                    </a>
+                    <a href="{% url 'accounts:logout' %}" class="btn btn-outline-light">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Fluxo de Sepultamento -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3><i class="bi bi-arrow-right-circle"></i> Fluxo de Sepultamento</h3>
+            <p class="text-muted">Siga os passos para completar um atendimento</p>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">1</div>
+                <h6>Cadastrar Família</h6>
+                <a href="{% url 'familia:familia_create' %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus"></i> Cadastrar
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">2</div>
+                <h6>Registrar Falecido</h6>
+                <a href="{% url 'pessoa_falecida:pessoa_falecida_create' %}" class="btn btn-sm btn-warning">
+                    <i class="bi bi-plus"></i> Registrar
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">3</div>
+                <h6>Selecionar Serviços</h6>
+                <a href="{% url 'servico_contratado:servico_contratado_create' %}" class="btn btn-sm btn-success">
+                    <i class="bi bi-plus"></i> Selecionar
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">4</div>
+                <h6>Agendar Serviços</h6>
+                <a href="{% url 'agendamento:agendamento_create' %}" class="btn btn-sm btn-info">
+                    <i class="bi bi-plus"></i> Agendar
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">5</div>
+                <h6>Planejar Execução</h6>
+                <a href="{% url 'planejamento:planejamento_create' %}" class="btn btn-sm btn-secondary">
+                    <i class="bi bi-plus"></i> Planejar
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">6</div>
+                <h6>Finalizar Pagamento</h6>
+                <a href="{% url 'financeiro:financeiro_create' %}" class="btn btn-sm btn-dark">
+                    <i class="bi bi-plus"></i> Finalizar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações Rápidas de Venda -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3><i class="bi bi-lightning-charge"></i> Ações Rápidas de Venda</h3>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'item_servico:item_servico_list' %}" class="quick-sale-btn btn btn-outline-primary w-100">
+                <i class="bi bi-box-seam" style="font-size: 2rem;"></i>
+                <span>Catálogo de Produtos</span>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'servico_contratado:servico_contratado_list' %}" class="quick-sale-btn btn btn-outline-success w-100">
+                <i class="bi bi-clipboard-check" style="font-size: 2rem;"></i>
+                <span>Serviços Contratados</span>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'agendamento:agendamento_list' %}" class="quick-sale-btn btn btn-outline-info w-100">
+                <i class="bi bi-calendar-event" style="font-size: 2rem;"></i>
+                <span>Agenda de Serviços</span>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'financeiro:financeiro_list' %}" class="quick-sale-btn btn btn-outline-warning w-100">
+                <i class="bi bi-currency-dollar" style="font-size: 2rem;"></i>
+                <span>Controle Financeiro</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Gestão de Clientes -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-people-fill"></i> Gestão de Clientes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'familia:familia_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-house-heart"></i> Famílias Cadastradas</span>
+                            <span class="badge bg-primary rounded-pill">{{ total_familias|default:0 }}</span>
+                        </a>
+                        <a href="{% url 'pessoa_falecida:pessoa_falecida_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-person-x"></i> Pessoas Falecidas</span>
+                            <span class="badge bg-warning rounded-pill">{{ total_falecidos|default:0 }}</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="bi bi-telephone"></i> Contatos de Emergência
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Serviços Disponíveis -->
+        <div class="col-md-6">
+            <div class="card dashboard-card">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="bi bi-gear-fill"></i> Serviços Disponíveis</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'item_servico:item_servico_list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-box"></i> Itens de Serviço</span>
+                            <span class="badge bg-success rounded-pill">{{ total_itens|default:0 }}</span>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="bi bi-flower1"></i> Serviços Florais
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="bi bi-truck"></i> Serviços de Transporte
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="bi bi-building"></i> Locação de Espaços
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agendamentos Próximos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card dashboard-card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-calendar-week"></i> Próximos Agendamentos</h5>
+                </div>
+                <div class="card-body">
+                    {% if agendamentos_proximos %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Data/Hora</th>
+                                        <th>Família</th>
+                                        <th>Serviço</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for agendamento in agendamentos_proximos %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ agendamento.data_agendamento|date:"d/m/Y" }}</strong><br>
+                                            <small class="text-muted">{{ agendamento.hora_agendamento|time:"H:i" }}</small>
+                                        </td>
+                                        <td>{{ agendamento.familia.nome_responsavel }}</td>
+                                        <td>{{ agendamento.descricao|truncatechars:30 }}</td>
+                                        <td>
+                                            <span class="badge bg-warning">Agendado</span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'agendamento:agendamento_detail' agendamento.pk %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-calendar-x" style="font-size: 3rem; color: #ccc;"></i>
+                            <p class="text-muted mt-2">Nenhum agendamento próximo</p>
+                            <a href="{% url 'agendamento:agendamento_create' %}" class="btn btn-primary">
+                                <i class="bi bi-plus"></i> Criar Agendamento
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir {{ object.nome }} - Sistema de Gestão Funerária{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5><i class="bi bi-exclamation-triangle"></i> Confirmar Exclusão</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">Tem certeza que deseja excluir a pessoa falecida:</p>
+                    <div class="alert alert-warning">
+                        <strong>{{ object.nome }}</strong><br>
+                        <small>Data de Falecimento: {{ object.data_falecimento|date:"d/m/Y" }}</small>
+                    </div>
+                    
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Atenção:</strong> Esta ação não pode ser desfeita. Todos os registros relacionados (agendamentos, planejamentos, serviços contratados e registros financeiros) também serão excluídos.
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'pessoa_falecida:detail' object.pk %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-trash"></i> Sim, Excluir
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

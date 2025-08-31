@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Administrador - Sistema Funerária{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2">
+                    <i class="bi bi-shield-check text-primary"></i>
+                    Dashboard Administrador
+                </h1>
+                <div>
+                    <span class="badge bg-success">{{ user.get_cargo_display }}</span>
+                    <span class="text-muted">Bem-vindo, {{ user.get_full_name|default:user.username }}!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Estatísticas Rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-people fs-1"></i>
+                    <h3>{{ total_funcionarios }}</h3>
+                    <p class="mb-0">Funcionários</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-heart fs-1"></i>
+                    <h3>{{ total_familias }}</h3>
+                    <p class="mb-0">Famílias</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-check fs-1"></i>
+                    <h3>{{ total_agendamentos }}</h3>
+                    <p class="mb-0">Agendamentos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <i class="bi bi-currency-dollar fs-1"></i>
+                    <h3>R$ {{ receita_mensal }}</h3>
+                    <p class="mb-0">Receita Mensal</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3>Ações Rápidas</h3>
+        </div>
+        <div class="col-md-2 mb-3">
+            <a href="{% url 'funcionario:create' %}" class="btn btn-primary w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="bi bi-person-plus fs-2"></i>
+                <span>Novo Funcionário</span>
+            </a>
+        </div>
+        <div class="col-md-2 mb-3">
+            <a href="{% url 'familia:create' %}" class="btn btn-success w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="bi bi-people fs-2"></i>
+                <span>Nova Família</span>
+            </a>
+        </div>
+        <div class="col-md-2 mb-3">
+            <a href="{% url 'pessoa_falecida:create' %}" class="btn btn-warning w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="bi bi-person-x fs-2"></i>
+                <span>Registrar Falecido</span>
+            </a>
+        </div>
+        <div class="col-md-2 mb-3">
+            <a href="{% url 'agendamento:create' %}" class="btn btn-info w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="bi bi-calendar-plus fs-2"></i>
+                <span>Agendamento</span>
+            </a>
+        </div>
+        <div class="col-md-2 mb-3">
+            <a href="{% url 'item_servico:create' %}" class="btn btn-secondary w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="bi bi-box fs-2"></i>
+                <span>Novo Item</span>
+            </a>
+        </div>
+        <div class="col-md-2 mb-3">
+            <a href="{% url 'financeiro:create' %}" class="btn btn-dark w-100 h-100 d-flex flex-column align-items-center justify-content-center">
+                <i class="bi bi-cash-stack fs-2"></i>
+                <span>Financeiro</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Módulos do Sistema -->
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-people"></i> Gestão de Pessoas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'funcionario:funcionario_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-person-badge"></i> Funcionários
+                        </a>
+                        <a href="{% url 'familia:familia_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-house-heart"></i> Famílias
+                        </a>
+                        <a href="{% url 'pessoa_falecida:pessoa_falecida_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-person-x"></i> Pessoas Falecidas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="bi bi-box-seam"></i> Serviços e Produtos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'item_servico:item_servico_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-box"></i> Itens de Serviço
+                        </a>
+                        <a href="{% url 'servico_contratado:servico_contratado_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-clipboard-check"></i> Serviços Contratados
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="bi bi-boxes"></i> Controle de Estoque
+                            <span class="badge bg-warning">Em Breve</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-calendar-event"></i> Operações</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'agendamento:agendamento_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-calendar-check"></i> Agendamentos
+                        </a>
+                        <a href="{% url 'planejamento:planejamento_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-diagram-3"></i> Planejamentos
+                        </a>
+                        <a href="{% url 'financeiro:financeiro_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-cash-stack"></i> Financeiro
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

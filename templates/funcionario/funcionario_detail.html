@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ funcionario.nome }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-person me-2"></i>{{ funcionario.nome }}
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'funcionario:update' funcionario.pk %}" class="btn btn-warning btn-custom">
+                <i class="bi bi-pencil me-1"></i>Editar
+            </a>
+            <a href="{% url 'funcionario:delete' funcionario.pk %}" class="btn btn-danger btn-custom">
+                <i class="bi bi-trash me-1"></i>Excluir
+            </a>
+        </div>
+        <a href="{% url 'funcionario:list' %}" class="btn btn-secondary btn-custom">
+            <i class="bi bi-arrow-left me-1"></i>Voltar
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle me-2"></i>Informações do Funcionário
+                </h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">
+                        <i class="bi bi-person me-1"></i>Nome:
+                    </dt>
+                    <dd class="col-sm-9">{{ funcionario.nome }}</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="bi bi-briefcase me-1"></i>Cargo:
+                    </dt>
+                    <dd class="col-sm-9">{{ funcionario.cargo }}</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="bi bi-telephone me-1"></i>Telefone:
+                    </dt>
+                    <dd class="col-sm-9">{{ funcionario.telefone }}</dd>
+
+                    <dt class="col-sm-3">
+                        <i class="bi bi-envelope me-1"></i>Email:
+                    </dt>
+                    <dd class="col-sm-9">{{ funcionario.email }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-activity me-2"></i>Ações Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{% url 'funcionario:update' funcionario.pk %}" class="btn btn-outline-warning">
+                        <i class="bi bi-pencil me-1"></i>Editar Funcionário
+                    </a>
+                    <a href="{% url 'agendamento:list' %}" class="btn btn-outline-primary">
+                        <i class="bi bi-calendar-event me-1"></i>Ver Agendamentos
+                    </a>
+                    <a href="{% url 'funcionario:create' %}" class="btn btn-outline-success">
+                        <i class="bi bi-plus-circle me-1"></i>Novo Funcionário
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

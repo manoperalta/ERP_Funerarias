@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title|default:"Pessoa Falecida" }} - Sistema de Gestão Funerária{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-person-x"></i> {{ title|default:"Pessoa Falecida" }}</h2>
+                <a href="{% url 'pessoa_falecida:list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nome.id_for_label }}" class="form-label">{{ form.nome.label }}</label>
+                                {{ form.nome }}
+                                {% if form.nome.errors %}
+                                    <div class="text-danger">{{ form.nome.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.familia.id_for_label }}" class="form-label">{{ form.familia.label }}</label>
+                                {{ form.familia }}
+                                {% if form.familia.errors %}
+                                    <div class="text-danger">{{ form.familia.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.data_nascimento.id_for_label }}" class="form-label">{{ form.data_nascimento.label }}</label>
+                                {{ form.data_nascimento }}
+                                {% if form.data_nascimento.errors %}
+                                    <div class="text-danger">{{ form.data_nascimento.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.data_falecimento.id_for_label }}" class="form-label">{{ form.data_falecimento.label }}</label>
+                                {{ form.data_falecimento }}
+                                {% if form.data_falecimento.errors %}
+                                    <div class="text-danger">{{ form.data_falecimento.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.local_obito.id_for_label }}" class="form-label">{{ form.local_obito.label }}</label>
+                                {{ form.local_obito }}
+                                {% if form.local_obito.errors %}
+                                    <div class="text-danger">{{ form.local_obito.errors }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.documento_cpf_rg.id_for_label }}" class="form-label">{{ form.documento_cpf_rg.label }}</label>
+                                {{ form.documento_cpf_rg }}
+                                {% if form.documento_cpf_rg.errors %}
+                                    <div class="text-danger">{{ form.documento_cpf_rg.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.causa_obito.id_for_label }}" class="form-label">{{ form.causa_obito.label }}</label>
+                            {{ form.causa_obito }}
+                            {% if form.causa_obito.errors %}
+                                <div class="text-danger">{{ form.causa_obito.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.imagem.id_for_label }}" class="form-label">{{ form.imagem.label }}</label>
+                            {{ form.imagem }}
+                            {% if form.imagem.errors %}
+                                <div class="text-danger">{{ form.imagem.errors }}</div>
+                            {% endif %}
+                            {% if object.imagem %}
+                                <div class="mt-2">
+                                    <img src="{{ object.imagem.url }}" alt="Foto do falecido" class="img-thumbnail" style="max-width: 200px;">
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger">
+                                {{ form.non_field_errors }}
+                            </div>
+                        {% endif %}
+
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'pessoa_falecida:list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

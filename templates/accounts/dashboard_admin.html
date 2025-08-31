@@ -1,0 +1,265 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Administrador - Sistema Funerária{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 15px;
+    }
+    .admin-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    .quick-action-btn {
+        width: 100%;
+        height: 120px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    .quick-action-btn:hover {
+        transform: scale(1.05);
+    }
+    .icon-large {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1><i class="bi bi-shield-check"></i> Dashboard Administrador</h1>
+                <p class="mb-0">Bem-vindo, {{ user.get_full_name|default:user.username }}! Você tem acesso completo ao sistema.</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="d-flex gap-2 justify-content-end">
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-outline-light">
+                        <i class="bi bi-person-circle"></i> Perfil
+                    </a>
+                    <a href="{% url 'accounts:logout' %}" class="btn btn-outline-light">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Estatísticas Rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card stat-card dashboard-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-people icon-large"></i>
+                    <h3>{{ total_funcionarios|default:0 }}</h3>
+                    <p class="mb-0">Funcionários</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card dashboard-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-heart icon-large"></i>
+                    <h3>{{ total_familias|default:0 }}</h3>
+                    <p class="mb-0">Famílias Atendidas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card dashboard-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-calendar-check icon-large"></i>
+                    <h3>{{ total_agendamentos|default:0 }}</h3>
+                    <p class="mb-0">Agendamentos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card stat-card dashboard-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-currency-dollar icon-large"></i>
+                    <h3>R$ {{ receita_mensal|default:"0,00" }}</h3>
+                    <p class="mb-0">Receita Mensal</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações Rápidas -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3><i class="bi bi-lightning-charge"></i> Ações Rápidas</h3>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'funcionario:create' %}" class="quick-action-btn btn btn-primary">
+                <i class="bi bi-person-plus icon-large"></i>
+                <span>Novo Funcionário</span>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'familia:create' %}" class="quick-action-btn btn btn-success">
+                <i class="bi bi-people icon-large"></i>
+                <span>Nova Família</span>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'pessoa_falecida:create' %}" class="quick-action-btn btn btn-warning">
+                <i class="bi bi-person-x icon-large"></i>
+                <span>Registrar Falecido</span>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'agendamento:create' %}" class="quick-action-btn btn btn-info">
+                <i class="bi bi-calendar-plus icon-large"></i>
+                <span>Novo Agendamento</span>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'item_servico:create' %}" class="quick-action-btn btn btn-secondary">
+                <i class="bi bi-box icon-large"></i>
+                <span>Novo Item</span>
+            </a>
+        </div>
+        <div class="col-md-2">
+            <a href="{% url 'financeiro:create' %}" class="quick-action-btn btn btn-dark">
+                <i class="bi bi-cash-stack icon-large"></i>
+                <span>Lançamento</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Módulos do Sistema -->
+    <div class="row">
+        <div class="col-12">
+            <h3><i class="bi bi-grid-3x3-gap"></i> Módulos do Sistema</h3>
+        </div>
+        
+        <!-- Gestão de Pessoas -->
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-people"></i> Gestão de Pessoas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'funcionario:funcionario_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-person-badge"></i> Funcionários
+                        </a>
+                        <a href="{% url 'familia:familia_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-house-heart"></i> Famílias
+                        </a>
+                        <a href="{% url 'pessoa_falecida:pessoa_falecida_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-person-x"></i> Pessoas Falecidas
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Serviços e Produtos -->
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="card-header bg-success text-white">
+                    <h5><i class="bi bi-box-seam"></i> Serviços e Produtos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'item_servico:item_servico_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-box"></i> Itens de Serviço
+                        </a>
+                        <a href="{% url 'servico_contratado:servico_contratado_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-clipboard-check"></i> Serviços Contratados
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="bi bi-boxes"></i> Controle de Estoque
+                            <span class="badge bg-warning">Admin</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Operações -->
+        <div class="col-md-4 mb-3">
+            <div class="card dashboard-card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-calendar-event"></i> Operações</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'agendamento:agendamento_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-calendar-check"></i> Agendamentos
+                        </a>
+                        <a href="{% url 'planejamento:planejamento_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-diagram-3"></i> Planejamentos
+                        </a>
+                        <a href="{% url 'financeiro:financeiro_list' %}" class="list-group-item list-group-item-action">
+                            <i class="bi bi-cash-stack"></i> Financeiro
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Relatórios Administrativos -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card dashboard-card">
+                <div class="card-header bg-dark text-white">
+                    <h5><i class="bi bi-graph-up"></i> Relatórios Administrativos</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-primary w-100 mb-2">
+                                <i class="bi bi-file-earmark-bar-graph"></i> Relatório Mensal
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-success w-100 mb-2">
+                                <i class="bi bi-currency-dollar"></i> Faturamento
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-info w-100 mb-2">
+                                <i class="bi bi-people"></i> Funcionários
+                            </a>
+                        </div>
+                        <div class="col-md-3">
+                            <a href="#" class="btn btn-outline-warning w-100 mb-2">
+                                <i class="bi bi-boxes"></i> Estoque
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

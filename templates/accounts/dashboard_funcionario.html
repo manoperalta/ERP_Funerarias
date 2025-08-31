@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard {{ cargo }} - Sistema Funerária{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-card {
+        transition: all 0.3s ease;
+        border: none;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+    .funcionario-header {
+        background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+        color: white;
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    .agenda-item {
+        border-left: 4px solid #8e44ad;
+        background: #f8f9fa;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-radius: 0 8px 8px 0;
+        transition: all 0.3s ease;
+    }
+    .agenda-item:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+    }
+    .agenda-item.urgente {
+        border-left-color: #e74c3c;
+        background: #fdf2f2;
+    }
+    .agenda-item.concluido {
+        border-left-color: #27ae60;
+        background: #f0f9f0;
+        opacity: 0.7;
+    }
+    .time-badge {
+        background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: bold;
+    }
+    .cargo-badge {
+        font-size: 1.2rem;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+    }
+    .florista { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+    .coveiro { background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%); }
+    .preparador { background: linear-gradient(135deg, #16a085 0%, #1abc9c 100%); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="funcionario-header">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h1>
+                    <i class="bi bi-person-workspace"></i> 
+                    Dashboard {{ cargo }}
+                </h1>
+                <p class="mb-0">Bem-vindo, {{ user.get_full_name|default:user.username }}! Aqui está sua agenda de trabalho.</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="d-flex gap-2 justify-content-end align-items-center">
+                    <span class="cargo-badge {{ user.cargo }}">{{ cargo }}</span>
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-outline-light">
+                        <i class="bi bi-person-circle"></i> Perfil
+                    </a>
+                    <a href="{% url 'accounts:logout' %}" class="btn btn-outline-light">
+                        <i class="bi bi-box-arrow-right"></i> Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <!-- Resumo do Dia -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card dashboard-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-calendar-day" style="font-size: 2.5rem; color: #8e44ad;"></i>
+                    <h3 class="mt-2">{{ agendamentos_hoje|length }}</h3>
+                    <p class="mb-0">Tarefas Hoje</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dashboard-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-clock-history" style="font-size: 2.5rem; color: #f39c12;"></i>
+                    <h3 class="mt-2">{{ agendamentos_pendentes|length }}</h3>
+                    <p class="mb-0">Pendentes</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dashboard-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-check-circle" style="font-size: 2.5rem; color: #27ae60;"></i>
+                    <h3 class="mt-2">{{ agendamentos_concluidos|length }}</h3>
+                    <p class="mb-0">Concluídas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card dashboard-card text-center">
+                <div class="card-body">
+                    <i class="bi bi-calendar-week" style="font-size: 2.5rem; color: #3498db;"></i>
+                    <h3 class="mt-2">{{ agendamentos_semana|length }}</h3>
+                    <p class="mb-0">Esta Semana</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agenda Pessoal -->
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-calendar-check"></i> Minha Agenda - {{ cargo }}</h5>
+                </div>
+                <div class="card-body">
+                    {% if agendamentos %}
+                        {% for agendamento in agendamentos %}
+                        <div class="agenda-item {% if agendamento.urgente %}urgente{% elif agendamento.concluido %}concluido{% endif %}">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <span class="time-badge">
+                                        {{ agendamento.data_agendamento|date:"d/m" }}<br>
+                                        {{ agendamento.hora_agendamento|time:"H:i" }}
+                                    </span>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="mb-1">{{ agendamento.descricao|truncatechars:50 }}</h6>
+                                    <p class="mb-1 text-muted">
+                                        <i class="bi bi-geo-alt"></i> {{ agendamento.local|default:"Local não informado" }}
+                                    </p>
+                                    {% if agendamento.observacoes %}
+                                    <small class="text-muted">
+                                        <i class="bi bi-chat-left-text"></i> {{ agendamento.observacoes|truncatechars:80 }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-2">
+                                    {% if agendamento.urgente %}
+                                        <span class="badge bg-danger">Urgente</span>
+                                    {% elif agendamento.concluido %}
+                                        <span class="badge bg-success">Concluído</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pendente</span>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{% url 'agendamento:agendamento_detail' agendamento.pk %}" 
+                                           class="btn btn-outline-primary" title="Ver Detalhes">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        {% if not agendamento.concluido %}
+                                        <button class="btn btn-outline-success" title="Marcar como Concluído">
+                                            <i class="bi bi-check"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-calendar-x" style="font-size: 4rem; color: #ccc;"></i>
+                            <h4 class="mt-3 text-muted">Nenhuma tarefa agendada</h4>
+                            <p class="text-muted">Você não possui tarefas agendadas no momento.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Informações do Funcionário -->
+        <div class="col-md-4">
+            <!-- Perfil -->
+            <div class="card dashboard-card mb-3">
+                <div class="card-header bg-secondary text-white">
+                    <h6><i class="bi bi-person-badge"></i> Meu Perfil</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-3">
+                        {% if user.foto_perfil %}
+                            <img src="{{ user.foto_perfil.url }}" class="rounded-circle" width="80" height="80" alt="Foto do Perfil">
+                        {% else %}
+                            <i class="bi bi-person-circle" style="font-size: 5rem; color: #ccc;"></i>
+                        {% endif %}
+                    </div>
+                    <h6 class="text-center">{{ user.get_full_name|default:user.username }}</h6>
+                    <p class="text-center text-muted">{{ cargo }}</p>
+                    
+                    <hr>
+                    
+                    <div class="small">
+                        <p><i class="bi bi-envelope"></i> {{ user.email }}</p>
+                        {% if user.telefone %}
+                        <p><i class="bi bi-telephone"></i> {{ user.telefone }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="d-grid">
+                        <a href="{% url 'accounts:profile' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="bi bi-pencil"></i> Editar Perfil
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Instruções por Cargo -->
+            <div class="card dashboard-card">
+                <div class="card-header bg-info text-white">
+                    <h6><i class="bi bi-info-circle"></i> Instruções - {{ cargo }}</h6>
+                </div>
+                <div class="card-body">
+                    {% if user.cargo == 'florista' %}
+                        <h6><i class="bi bi-flower1"></i> Responsabilidades do Florista:</h6>
+                        <ul class="small">
+                            <li>Preparar arranjos florais</li>
+                            <li>Decorar ambiente do velório</li>
+                            <li>Manter flores frescas</li>
+                            <li>Coordenar entrega de coroas</li>
+                        </ul>
+                    {% elif user.cargo == 'coveiro' %}
+                        <h6><i class="bi bi-shovel"></i> Responsabilidades do Coveiro:</h6>
+                        <ul class="small">
+                            <li>Preparar local do sepultamento</li>
+                            <li>Realizar escavação</li>
+                            <li>Auxiliar no sepultamento</li>
+                            <li>Manter cemitério organizado</li>
+                        </ul>
+                    {% elif user.cargo == 'preparador' %}
+                        <h6><i class="bi bi-heart-pulse"></i> Responsabilidades do Preparador:</h6>
+                        <ul class="small">
+                            <li>Preparar o corpo do falecido</li>
+                            <li>Realizar tanatopraxia</li>
+                            <li>Vestir e posicionar o corpo</li>
+                            <li>Manter equipamentos limpos</li>
+                        </ul>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="alert alert-warning alert-sm">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <strong>Importante:</strong> Sempre verifique os detalhes de cada agendamento antes de iniciar o trabalho.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

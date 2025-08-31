@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Pessoas Falecidas - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">
+        <i class="bi bi-person-x me-2"></i>Pessoas Falecidas
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'pessoa_falecida:create' %}" class="btn btn-primary btn-custom">
+            <i class="bi bi-plus-circle me-1"></i>Nova Pessoa Falecida
+        </a>
+    </div>
+</div>
+
+{% if pessoas_falecidas %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>Data de Falecimento</th>
+                    <th>Idade no Óbito</th>
+                    <th>Família</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pessoa in pessoas_falecidas %}
+                <tr>
+                    <td>{{ pessoa.nome }}</td>
+                    <td>{{ pessoa.data_falecimento|date:"d/m/Y" }}</td>
+                    <td>{{ pessoa.idade_obito }} anos</td>
+                    <td>{{ pessoa.familia.nome_responsavel }}</td>
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a href="{% url 'pessoa_falecida:detail' pessoa.pk %}" class="btn btn-sm btn-outline-info">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'pessoa_falecida:update' pessoa.pk %}" class="btn btn-sm btn-outline-warning">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'pessoa_falecida:delete' pessoa.pk %}" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="alert alert-info" role="alert">
+        <i class="bi bi-info-circle me-2"></i>
+        Nenhuma pessoa falecida cadastrada. <a href="{% url 'pessoa_falecida:create' %}" class="alert-link">Cadastre a primeira pessoa</a>.
+    </div>
+{% endif %}
+{% endblock %}
+

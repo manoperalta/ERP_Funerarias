@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir {{ funcionario.nome }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2 text-danger">
+        <i class="bi bi-exclamation-triangle me-2"></i>Confirmar Exclusão
+    </h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="{% url 'funcionario:detail' funcionario.pk %}" class="btn btn-secondary btn-custom">
+            <i class="bi bi-arrow-left me-1"></i>Voltar
+        </a>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-exclamation-triangle me-2"></i>Atenção!
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">
+                    Você tem certeza que deseja excluir o funcionário <strong>{{ funcionario.nome }}</strong>?
+                </p>
+                
+                <div class="alert alert-warning" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Esta ação não pode ser desfeita!</strong> Todos os dados relacionados a este funcionário serão permanentemente removidos.
+                </div>
+
+                <div class="card bg-light">
+                    <div class="card-body">
+                        <h6 class="card-title">Dados que serão excluídos:</h6>
+                        <ul class="list-unstyled mb-0">
+                            <li><i class="bi bi-person me-1"></i><strong>Nome:</strong> {{ funcionario.nome }}</li>
+                            <li><i class="bi bi-briefcase me-1"></i><strong>Cargo:</strong> {{ funcionario.cargo }}</li>
+                            <li><i class="bi bi-telephone me-1"></i><strong>Telefone:</strong> {{ funcionario.telefone }}</li>
+                            <li><i class="bi bi-envelope me-1"></i><strong>Email:</strong> {{ funcionario.email }}</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <form method="post" class="mt-4">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'funcionario:detail' funcionario.pk %}" class="btn btn-secondary btn-custom me-md-2">
+                            <i class="bi bi-x-circle me-1"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-danger btn-custom">
+                            <i class="bi bi-trash me-1"></i>Sim, Excluir
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
