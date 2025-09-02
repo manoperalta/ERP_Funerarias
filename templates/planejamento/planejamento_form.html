@@ -72,9 +72,15 @@
                             <a href="{% url 'planejamento:list' %}" class="btn btn-secondary">
                                 <i class="fas fa-arrow-left"></i> Voltar
                             </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> Salvar
-                            </button>
+                            {% if user.cargo == 'adm' or user.cargo == 'vendedor' %}
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Salvar
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary" disabled title="Apenas administradores e vendedores podem salvar planejamentos">
+                                    <i class="fas fa-lock"></i> Acesso Restrito
+                                </button>
+                            {% endif %}
                         </div>
                     </form>
                 </div>

@@ -12,6 +12,13 @@ class ItemServico(models.Model):
         decimal_places=2, 
         verbose_name="Preço Unitário"
     )
+    imagem = models.ImageField(
+        upload_to='itens_servicos/',
+        blank=True,
+        null=True,
+        verbose_name="Imagem",
+        help_text="Imagem do item/serviço"
+    )
     
     class Meta:
         verbose_name = "Item de Serviço"

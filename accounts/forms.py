@@ -8,7 +8,7 @@ class CustomUserCreationForm(UserCreationForm):
     
     class Meta:
         model = CustomUser
-        fields = ('username', 'email', 'first_name', 'last_name', 'cargo', 'telefone')
+        fields = ('username', 'email', 'first_name', 'last_name', 'cargo', 'telefone', 'foto_perfil')
         widgets = {
             'username': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -33,6 +33,10 @@ class CustomUserCreationForm(UserCreationForm):
                 'class': 'form-control',
                 'placeholder': '(11) 99999-9999'
             }),
+            'foto_perfil': forms.FileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
         }
         labels = {
             'username': 'Nome de Usuário',
@@ -41,6 +45,7 @@ class CustomUserCreationForm(UserCreationForm):
             'last_name': 'Sobrenome',
             'cargo': 'Cargo',
             'telefone': 'Telefone',
+            'foto_perfil': 'Foto do Perfil',
         }
     
     def __init__(self, *args, **kwargs):
@@ -62,6 +67,9 @@ class CustomUserCreationForm(UserCreationForm):
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
         self.fields['cargo'].required = True
+        
+        # Define cargo padrão como funcionário
+        self.fields['cargo'].initial = 'funcionario'
 
 
 class CustomUserChangeForm(UserChangeForm):

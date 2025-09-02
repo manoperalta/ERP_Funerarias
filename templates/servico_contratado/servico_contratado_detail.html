@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalhes do Serviço Contratado{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-clipboard-check"></i> Detalhes do Serviço Contratado</h2>
+                <div class="btn-group">
+                    <a href="{% url 'servico_contratado:nota_fiscal' servico_contratado.pk %}" class="btn btn-success">
+                        <i class="bi bi-file-earmark-pdf"></i> Gerar Nota Fiscal
+                    </a>
+                    {% if user.cargo == 'adm' %}
+                        <a href="{% url 'servico_contratado:update' servico_contratado.pk %}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a href="{% url 'servico_contratado:delete' servico_contratado.pk %}" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Excluir
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'servico_contratado:list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-info-circle"></i> Informações do Serviço Contratado</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-person"></i> Pessoa Falecida:</strong><br>{{ servico_contratado.pessoa_falecida.nome }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-briefcase"></i> Item de Serviço:</strong><br>{{ servico_contratado.item_servico.nome }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-calendar"></i> Data da Contratação:</strong><br>{{ servico_contratado.data_contratacao|date:"d/m/Y" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong><i class="bi bi-currency-dollar"></i> Valor Total:</strong><br>{{ servico_contratado.valor_total }}</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <p><strong><i class="bi bi-card-text"></i> Observações:</strong><br>{{ servico_contratado.observacoes }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

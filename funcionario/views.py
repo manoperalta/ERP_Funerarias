@@ -2,9 +2,10 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from .models import Funcionario
 from .forms import FuncionarioForm
+from app.mixins import LoginRequiredMixin, AdminDeleteMixin
 
 
-class FuncionarioListView(ListView):
+class FuncionarioListView(LoginRequiredMixin, ListView):
     """View para listar funcionários."""
     model = Funcionario
     template_name = 'funcionario/funcionario_list.html'
@@ -12,14 +13,14 @@ class FuncionarioListView(ListView):
     paginate_by = 10
 
 
-class FuncionarioDetailView(DetailView):
+class FuncionarioDetailView(LoginRequiredMixin, DetailView):
     """View para exibir detalhes de um funcionário."""
     model = Funcionario
     template_name = 'funcionario/funcionario_detail.html'
     context_object_name = 'funcionario'
 
 
-class FuncionarioCreateView(CreateView):
+class FuncionarioCreateView(LoginRequiredMixin, CreateView):
     """View para criar um novo funcionário."""
     model = Funcionario
     form_class = FuncionarioForm
@@ -32,7 +33,7 @@ class FuncionarioCreateView(CreateView):
         return context
 
 
-class FuncionarioUpdateView(UpdateView):
+class FuncionarioUpdateView(LoginRequiredMixin, UpdateView):
     """View para atualizar um funcionário."""
     model = Funcionario
     form_class = FuncionarioForm
@@ -45,8 +46,8 @@ class FuncionarioUpdateView(UpdateView):
         return context
 
 
-class FuncionarioDeleteView(DeleteView):
-    """View para excluir um funcionário."""
+class FuncionarioDeleteView(AdminDeleteMixin, DeleteView):
+    """View para excluir um funcionário. Restrito a administradores."""
     model = Funcionario
     template_name = 'funcionario/funcionario_confirm_delete.html'
     success_url = reverse_lazy('funcionario:list')

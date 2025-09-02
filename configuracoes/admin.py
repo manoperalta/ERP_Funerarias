@@ -4,113 +4,63 @@ from .models import ConfiguracaoFuneraria
 
 @admin.register(ConfiguracaoFuneraria)
 class ConfiguracaoFunerariaAdmin(admin.ModelAdmin):
-    """Administração das configurações da funerária."""
-    
-    list_display = [
-        'nome_funeraria', 
-        'ativa', 
-        'telefone_principal', 
-        'email_principal',
-        'data_atualizacao'
-    ]
-    
-    list_filter = [
-        'ativa',
-        'data_criacao',
-        'data_atualizacao'
-    ]
-    
-    search_fields = [
-        'nome_funeraria',
-        'cnpj',
-        'email_principal',
-        'telefone_principal'
-    ]
-    
-    readonly_fields = [
-        'data_criacao',
-        'data_atualizacao'
-    ]
-    
+    list_display = (
+        'nome_funeraria', 'telefone_principal', 'email_principal', 
+        'cidade', 'estado', 'ativa'
+    )
+    list_filter = (
+        'ativa', 'cidade', 'estado'
+    )
+    search_fields = (
+        'nome_funeraria', 'telefone_principal', 'email_principal', 
+        'endereco_completo', 'cnpj'
+    )
     fieldsets = (
-        ('Informações Básicas', {
+        (None, {
             'fields': (
-                'nome_funeraria',
-                'slogan',
-                'ativa'
+                'nome_funeraria', 'slogan', 'logo', 'favicon', 'ativa'
             )
         }),
-        ('Imagens', {
+        ('Informações de Contato', {
             'fields': (
-                'logo',
-                'favicon'
-            )
-        }),
-        ('Contato', {
-            'fields': (
-                'telefone_principal',
-                'telefone_secundario',
-                'email_principal',
-                'email_comercial'
+                'telefone_principal', 'telefone_secundario', 
+                'email_principal', 'email_comercial'
             )
         }),
         ('Endereço', {
             'fields': (
-                'endereco_completo',
-                'cidade',
-                'estado',
-                'cep'
+                'endereco_completo', 'cep', 'cidade', 'estado'
             )
         }),
         ('Informações Legais', {
             'fields': (
-                'cnpj',
-                'inscricao_estadual'
+                'cnpj', 'inscricao_estadual'
             )
         }),
         ('Redes Sociais', {
             'fields': (
-                'facebook_url',
-                'instagram_url',
-                'whatsapp_numero'
+                'facebook_url', 'instagram_url', 'whatsapp_numero'
             )
         }),
         ('Aparência', {
             'fields': (
-                'cor_primaria',
-                'cor_secundaria'
+                'cor_primaria', 'cor_secundaria'
             )
         }),
-        ('Funcionamento', {
+        ('Outros', {
             'fields': (
-                'horario_funcionamento',
+                'horario_funcionamento', 'data_criacao', 'data_atualizacao'
             )
         }),
-        ('Sistema', {
-            'fields': (
-                'data_criacao',
-                'data_atualizacao'
-            ),
-            'classes': ('collapse',)
-        })
     )
-    
+    readonly_fields = ('data_criacao', 'data_atualizacao')
+
+    def has_add_permission(self, request):
+        # Permite adicionar apenas se não houver nenhuma configuração ativa
+        return not ConfiguracaoFuneraria.objects.filter(ativa=True).exists()
+
     def has_delete_permission(self, request, obj=None):
-        """Impede a exclusão se for a única configuração ativa."""
+        # Permite deletar apenas se não for a configuração ativa
         if obj and obj.ativa:
-            # Verifica se é a única configuração ativa
-            ativas = ConfiguracaoFuneraria.objects.filter(ativa=True).count()
-            if ativas <= 1:
-                return False
-        return super().has_delete_permission(request, obj)
-    
-    def save_model(self, request, obj, form, change):
-        """Personaliza o salvamento do modelo."""
-        super().save_model(request, obj, form, change)
-        
-        # Mensagem de sucesso personalizada
-        if obj.ativa:
-            self.message_user(
-                request,
-                f"Configuração '{obj.nome_funeraria}' ativada com sucesso!"
-            )
+            return False
+        return True

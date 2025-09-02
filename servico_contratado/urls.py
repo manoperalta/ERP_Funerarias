@@ -9,5 +9,6 @@ urlpatterns = [
     path('novo/', views.ServicoContratadoCreateView.as_view(), name='create'),
     path('<int:pk>/editar/', views.ServicoContratadoUpdateView.as_view(), name='update'),
     path('<int:pk>/excluir/', views.ServicoContratadoDeleteView.as_view(), name='delete'),
+    path('<int:pk>/nota-fiscal/', views.gerar_nota_fiscal_pdf, name='nota_fiscal'),
 ]
 

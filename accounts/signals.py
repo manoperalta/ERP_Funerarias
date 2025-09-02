@@ -17,17 +17,20 @@ def log_criacao_usuario(sender, instance, created, **kwargs):
 @receiver(post_save, sender=User)
 def validar_permissoes_usuario(sender, instance, created, **kwargs):
     """Valida e ajusta permissões baseadas no cargo."""
+    if not created and hasattr(instance, '_processing_signal') and instance._processing_signal:
+        return
+
+    original_is_staff = instance.is_staff
+
     if instance.cargo == 'adm':
-        # Administradores têm acesso total
         instance.is_staff = True
-        if not created:  # Evita loop infinito
-            instance.save(update_fields=['is_staff'])
     elif instance.cargo in ['florista', 'coveiro', 'preparador']:
-        # Funcionários operacionais não têm acesso admin
-        if instance.is_staff:
-            instance.is_staff = False
-            if not created:
-                instance.save(update_fields=['is_staff'])
+        instance.is_staff = False
+
+    if original_is_staff != instance.is_staff:
+        instance._processing_signal = True
+        instance.save(update_fields=['is_staff'])
+        del instance._processing_signal
 
 
 @receiver(user_logged_in)
@@ -100,4 +103,5 @@ def processar_notificacao(sender, tipo, mensagem, usuario=None, **kwargs):
 #     mensagem='Produto X está com estoque baixo',
 #     usuario=admin_user
 # )
+
 

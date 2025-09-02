@@ -2,9 +2,10 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from .models import ItemServico
 from .forms import ItemServicoForm
+from app.mixins import LoginRequiredMixin, AdminDeleteMixin
 
 
-class ItemServicoListView(ListView):
+class ItemServicoListView(LoginRequiredMixin, ListView):
     """View para listar itens de serviço."""
     model = ItemServico
     template_name = 'item_servico/item_servico_list.html'
@@ -12,14 +13,14 @@ class ItemServicoListView(ListView):
     paginate_by = 10
 
 
-class ItemServicoDetailView(DetailView):
+class ItemServicoDetailView(LoginRequiredMixin, DetailView):
     """View para exibir detalhes de um item de serviço."""
     model = ItemServico
     template_name = 'item_servico/item_servico_detail.html'
     context_object_name = 'item_servico'
 
 
-class ItemServicoCreateView(CreateView):
+class ItemServicoCreateView(LoginRequiredMixin, CreateView):
     """View para criar um novo item de serviço."""
     model = ItemServico
     form_class = ItemServicoForm
@@ -32,7 +33,7 @@ class ItemServicoCreateView(CreateView):
         return context
 
 
-class ItemServicoUpdateView(UpdateView):
+class ItemServicoUpdateView(LoginRequiredMixin, UpdateView):
     """View para atualizar um item de serviço."""
     model = ItemServico
     form_class = ItemServicoForm
@@ -45,8 +46,8 @@ class ItemServicoUpdateView(UpdateView):
         return context
 
 
-class ItemServicoDeleteView(DeleteView):
-    """View para excluir um item de serviço."""
+class ItemServicoDeleteView(AdminDeleteMixin, DeleteView):
+    """View para excluir um item de serviço. Restrito a administradores."""
     model = ItemServico
     template_name = 'item_servico/item_servico_confirm_delete.html'
     success_url = reverse_lazy('item_servico:list')

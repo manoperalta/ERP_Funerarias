@@ -19,6 +19,66 @@
         </div>
     </div>
 
+    <!-- Barra de Busca -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-search"></i> Busca Rápida</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{% url 'dashboard_admin' %}" id="searchForm">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="search_type">Tipo de Busca:</label>
+                                    <select class="form-select" name="search_type" id="search_type">
+                                        <option value="familia">Família</option>
+                                        <option value="falecido">Falecido</option>
+                                        <option value="funcionario">Funcionário</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="search_query">Termo de Busca:</label>
+                                    <input type="text" class="form-control" name="search_query" id="search_query" 
+                                           placeholder="Digite o nome para buscar..." value="{{ request.GET.search_query }}">
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary w-100">
+                                        <i class="bi bi-search"></i> Buscar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    
+                    <!-- Resultados da Busca -->
+                    {% if search_results %}
+                    <div class="mt-3">
+                        <h6>Resultados da Busca:</h6>
+                        <div class="list-group">
+                            {% for result in search_results %}
+                            <a href="{{ result.url }}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ result.name }}</h6>
+                                    <small class="text-muted">{{ result.type }}</small>
+                                </div>
+                                <p class="mb-1">{{ result.description }}</p>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Estatísticas Rápidas -->
     <div class="row mb-4">
         <div class="col-md-3">
@@ -111,13 +171,13 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
-                        <a href="{% url 'funcionario:funcionario_list' %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'funcionario:list' %}" class="list-group-item list-group-item-action">
                             <i class="bi bi-person-badge"></i> Funcionários
                         </a>
-                        <a href="{% url 'familia:familia_list' %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'familia:list' %}" class="list-group-item list-group-item-action">
                             <i class="bi bi-house-heart"></i> Famílias
                         </a>
-                        <a href="{% url 'pessoa_falecida:pessoa_falecida_list' %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'pessoa_falecida:list' %}" class="list-group-item list-group-item-action">
                             <i class="bi bi-person-x"></i> Pessoas Falecidas
                         </a>
                     </div>
@@ -132,10 +192,10 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
-                        <a href="{% url 'item_servico:item_servico_list' %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'item_servico:list' %}" class="list-group-item list-group-item-action">
                             <i class="bi bi-box"></i> Itens de Serviço
                         </a>
-                        <a href="{% url 'servico_contratado:servico_contratado_list' %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'servico_contratado:list' %}" class="list-group-item list-group-item-action">
                             <i class="bi bi-clipboard-check"></i> Serviços Contratados
                         </a>
                         <a href="#" class="list-group-item list-group-item-action">
@@ -154,13 +214,13 @@
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
-                        <a href="{% url 'agendamento:agendamento_list' %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'agendamento:list' %}" class="list-group-item list-group-item-action">
                             <i class="bi bi-calendar-check"></i> Agendamentos
                         </a>
-                        <a href="{% url 'planejamento:planejamento_list' %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'planejamento:list' %}" class="list-group-item list-group-item-action">
                             <i class="bi bi-diagram-3"></i> Planejamentos
                         </a>
-                        <a href="{% url 'financeiro:financeiro_list' %}" class="list-group-item list-group-item-action">
+                        <a href="{% url 'financeiro:list' %}" class="list-group-item list-group-item-action">
                             <i class="bi bi-cash-stack"></i> Financeiro
                         </a>
                     </div>

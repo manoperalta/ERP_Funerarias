@@ -22,9 +22,9 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name='base.html'), name='home'),
-    path('accounts/', include('accounts.urls')),
+    path("admin/", admin.site.urls),
+    path("", accounts_views.home_redirect, name="home"),
+    path("accounts/", include("accounts.urls")),
     
     # URLs dos dashboards (sem namespace para facilitar redirecionamento)
     path('dashboard/admin/', accounts_views.dashboard_admin, name='dashboard_admin'),

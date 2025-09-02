@@ -2,9 +2,10 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from .models import Familia
 from .forms import FamiliaForm
+from app.mixins import LoginRequiredMixin, AdminDeleteMixin
 
 
-class FamiliaListView(ListView):
+class FamiliaListView(LoginRequiredMixin, ListView):
     """View para listar famílias."""
     model = Familia
     template_name = 'familia/familia_list.html'
@@ -12,14 +13,14 @@ class FamiliaListView(ListView):
     paginate_by = 10
 
 
-class FamiliaDetailView(DetailView):
+class FamiliaDetailView(LoginRequiredMixin, DetailView):
     """View para exibir detalhes de uma família."""
     model = Familia
     template_name = 'familia/familia_detail.html'
     context_object_name = 'familia'
 
 
-class FamiliaCreateView(CreateView):
+class FamiliaCreateView(LoginRequiredMixin, CreateView):
     """View para criar uma nova família."""
     model = Familia
     form_class = FamiliaForm
@@ -32,7 +33,7 @@ class FamiliaCreateView(CreateView):
         return context
 
 
-class FamiliaUpdateView(UpdateView):
+class FamiliaUpdateView(LoginRequiredMixin, UpdateView):
     """View para atualizar uma família."""
     model = Familia
     form_class = FamiliaForm
@@ -45,8 +46,8 @@ class FamiliaUpdateView(UpdateView):
         return context
 
 
-class FamiliaDeleteView(DeleteView):
-    """View para excluir uma família."""
+class FamiliaDeleteView(AdminDeleteMixin, DeleteView):
+    """View para excluir uma família. Restrito a administradores."""
     model = Familia
     template_name = 'familia/familia_confirm_delete.html'
     success_url = reverse_lazy('familia:list')

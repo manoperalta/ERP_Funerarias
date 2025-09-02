@@ -82,16 +82,46 @@
             
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/">
-                            <i class="bi bi-house me-1"></i>Início
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/">
-                            <i class="bi bi-gear me-1"></i>Admin
-                        </a>
-                    </li>
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle me-1"></i>{{ user.get_full_name|default:user.username }}
+                            </a>
+                            <ul class="dropdown-menu">
+                                {% if user.is_admin %}
+                                    <li><a class="dropdown-item" href="{% url 'dashboard_admin' %}">
+                                        <i class="bi bi-speedometer2 me-1"></i>Dashboard Admin
+                                    </a></li>
+                                {% elif user.is_vendedor %}
+                                    <li><a class="dropdown-item" href="{% url 'dashboard_vendedor' %}">
+                                        <i class="bi bi-speedometer2 me-1"></i>Dashboard Vendedor
+                                    </a></li>
+                                {% elif user.is_funcionario_operacional %}
+                                    <li><a class="dropdown-item" href="{% url 'dashboard_funcionario' %}">
+                                        <i class="bi bi-speedometer2 me-1"></i>Dashboard
+                                    </a></li>
+                                {% endif %}
+                                <li><a class="dropdown-item" href="{% url 'accounts:profile' %}">
+                                    <i class="bi bi-person me-1"></i>Perfil
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">
+                                    <i class="bi bi-box-arrow-right me-1"></i>Sair
+                                </a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:login' %}">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Entrar
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'accounts:register' %}">
+                                <i class="bi bi-person-plus me-1"></i>Cadastrar
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
@@ -100,55 +130,67 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
+            {% if user.is_authenticated %}
             <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
                 <div class="position-sticky pt-3">
                     <ul class="nav flex-column">
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'funcionario:list' %}">
-                                <i class="bi bi-people me-2"></i>Funcionários
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'familia:list' %}">
-                                <i class="bi bi-house-heart me-2"></i>Famílias
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'pessoa_falecida:list' %}">
-                                <i class="bi bi-person-x me-2"></i>Pessoas Falecidas
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'item_servico:list' %}">
-                                <i class="bi bi-box me-2"></i>Itens de Serviço
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'servico_contratado:list' %}">
-                                <i class="bi bi-clipboard-check me-2"></i>Serviços Contratados
-                            </a>
-                        </li>
+                        {% if user.is_admin or user.is_vendedor %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'funcionario:list' %}">
+                                    <i class="bi bi-people me-2"></i>Funcionários
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'familia:list' %}">
+                                    <i class="bi bi-house-heart me-2"></i>Famílias
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'pessoa_falecida:list' %}">
+                                    <i class="bi bi-person-x me-2"></i>Pessoas Falecidas
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'item_servico:list' %}">
+                                    <i class="bi bi-box me-2"></i>Itens de Serviço
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'servico_contratado:list' %}">
+                                    <i class="bi bi-clipboard-check me-2"></i>Serviços Contratados
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'planejamento:list' %}">
+                                    <i class="bi bi-diagram-3 me-2"></i>Planejamentos
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'financeiro:list' %}">
+                                    <i class="bi bi-currency-dollar me-2"></i>Financeiro
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        <!-- Agendamentos disponível para todos os usuários autenticados -->
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'agendamento:list' %}">
                                 <i class="bi bi-calendar-event me-2"></i>Agendamentos
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'planejamento:list' %}">
-                                <i class="bi bi-diagram-3 me-2"></i>Planejamentos
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="{% url 'financeiro:list' %}">
-                                <i class="bi bi-currency-dollar me-2"></i>Financeiro
-                            </a>
-                        </li>
+                        
+                        {% if user.is_funcionario_operacional %}
+                            <li class="nav-item">
+                                <small class="text-muted ms-3">Acesso limitado a agendamentos</small>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div>
             </nav>
+            {% endif %}
 
             <!-- Main content -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+            <main class="{% if user.is_authenticated %}col-md-9 ms-sm-auto col-lg-10{% else %}col-12{% endif %} px-md-4 main-content">
                 <div class="pt-3">
                     {% if messages %}
                         {% for message in messages %}
@@ -160,21 +202,42 @@
                     {% endif %}
 
                     {% block content %}
-                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                        <h1 class="h2">Dashboard</h1>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6 col-lg-3 mb-4">
-                            <div class="card card-hover h-100">
-                                <div class="card-body text-center">
-                                    <i class="bi bi-people fs-1 text-primary mb-3"></i>
-                                    <h5 class="card-title">Funcionários</h5>
-                                    <p class="card-text">Gerenciar funcionários da funerária</p>
-                                    <a href="{% url 'funcionario:list' %}" class="btn btn-primary btn-custom">Acessar</a>
+                    {% if user.is_authenticated %}
+                        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                            <h1 class="h2">Dashboard</h1>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 col-lg-3 mb-4">
+                                <div class="card card-hover h-100">
+                                    <div class="card-body text-center">
+                                        <i class="bi bi-people fs-1 text-primary mb-3"></i>
+                                        <h5 class="card-title">Funcionários</h5>
+                                        <p class="card-text">Gerenciar funcionários da funerária</p>
+                                        <a href="{% url 'funcionario:list' %}" class="btn btn-primary btn-custom">Acessar</a>
+                                    </div>
+                                </div>
+                            </div>
+                    {% else %}
+                        <div class="container mt-5">
+                            <div class="row justify-content-center">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body text-center">
+                                            <h2><i class="bi bi-shield-lock"></i> Acesso Restrito</h2>
+                                            <p class="text-muted">Você precisa estar logado para acessar o sistema.</p>
+                                            <a href="{% url 'accounts:login' %}" class="btn btn-primary me-2">
+                                                <i class="bi bi-box-arrow-in-right"></i> Entrar
+                                            </a>
+                                            <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary">
+                                                <i class="bi bi-person-plus"></i> Cadastrar
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    {% endif %}
                         
                         <div class="col-md-6 col-lg-3 mb-4">
                             <div class="card card-hover h-100">

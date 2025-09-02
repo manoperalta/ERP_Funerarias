@@ -1,8 +1,12 @@
 from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.decorators import login_required
 from pessoa_falecida.models import PessoaFalecida
 from agendamento.models import Agendamento
 
+
+@login_required
 def post_lembranca_view(request, pk):
+    """View para exibir post de lembrança de uma pessoa falecida."""
     pessoa_falecida = get_object_or_404(PessoaFalecida, pk=pk)
     agendamento = Agendamento.objects.filter(pessoa_falecida=pessoa_falecida).first()
     

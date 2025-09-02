@@ -30,12 +30,24 @@ ALLOWED_HOSTS = ['*']
 
 # CSRF Configuration
 CSRF_TRUSTED_ORIGINS = [
+    'https://8000-icr58gv48vywkqths68ty-cec5ac0c.manusvm.computer',
     'https://8000-ifvbyihjmpvvi1lzq17oz-0ab919fa.manus.computer',
     'https://8001-iqlpwhzc6rn1bgjqquas2-0ab919fa.manus.computer',
+    'https://8000-i954r8tn6b77acgqrag7g-cec5ac0c.manusvm.computer',
+    'https://8001-i954r8tn6b77acgqrag7g-cec5ac0c.manusvm.computer',
+    'https://8002-i954r8tn6b77acgqrag7g-cec5ac0c.manusvm.computer',
+    'https://8003-i954r8tn6b77acgqrag7g-cec5ac0c.manusvm.computer',
+    'https://9000-i954r8tn6b77acgqrag7g-cec5ac0c.manusvm.computer',
     'http://localhost:8000',
     'http://localhost:8001',
+    'http://localhost:8002',
+    'http://localhost:8003',
+    'http://localhost:9000',
     'http://127.0.0.1:8000',
     'http://127.0.0.1:8001',
+    'http://127.0.0.1:8002',
+    'http://127.0.0.1:8003',
+    'http://127.0.0.1:9000',
 ]
 
 

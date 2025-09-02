@@ -71,6 +71,28 @@
                 </div>
 
                 <div class="col-md-4">
+                    <!-- Foto da Pessoa Falecida -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h5><i class="bi bi-image"></i> Foto</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            {% if pessoa_falecida.imagem %}
+                                <img src="{{ pessoa_falecida.imagem.url }}" 
+                                     alt="Foto de {{ pessoa_falecida.nome }}" 
+                                     class="img-fluid rounded shadow"
+                                     style="max-height: 300px; width: auto;">
+                                <p class="mt-2 text-muted small">{{ pessoa_falecida.nome }}</p>
+                            {% else %}
+                                <div class="text-center p-4">
+                                    <i class="bi bi-person-circle text-muted" style="font-size: 4rem;"></i>
+                                    <p class="text-muted mt-2">Nenhuma foto disponível</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Ações Rápidas -->
                     <div class="card">
                         <div class="card-header">
                             <h5><i class="bi bi-lightning"></i> Ações Rápidas</h5>

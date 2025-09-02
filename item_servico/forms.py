@@ -7,7 +7,7 @@ class ItemServicoForm(forms.ModelForm):
     
     class Meta:
         model = ItemServico
-        fields = ['nome', 'descricao', 'quantidade', 'preco_unitario']
+        fields = ['nome', 'descricao', 'quantidade', 'preco_unitario', 'imagem']
         widgets = {
             'nome': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -29,12 +29,17 @@ class ItemServicoForm(forms.ModelForm):
                 'step': '0.01',
                 'min': '0'
             }),
+            'imagem': forms.ClearableFileInput(attrs={
+                'class': 'form-control',
+                'accept': 'image/*'
+            }),
         }
         labels = {
             'nome': 'Nome do Item/Serviço',
             'descricao': 'Descrição',
             'quantidade': 'Quantidade em Estoque',
             'preco_unitario': 'Preço Unitário (R$)',
+            'imagem': 'Imagem do Item/Serviço',
         }
         
     def clean_preco_unitario(self):
@@ -50,4 +55,3 @@ class ItemServicoForm(forms.ModelForm):
         if quantidade is not None and quantidade < 0:
             raise forms.ValidationError('A quantidade não pode ser negativa.')
         return quantidade
-

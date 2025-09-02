@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ item_servico.nome }} - Detalhes do Item de Serviço{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="bi bi-box"></i> Detalhes do Item de Serviço: {{ item_servico.nome }}</h2>
+                <div class="btn-group">
+                    {% if user.cargo == 'adm' %}
+                        <a href="{% url 'item_servico:update' item_servico.pk %}" class="btn btn-warning">
+                            <i class="bi bi-pencil"></i> Editar
+                        </a>
+                        <a href="{% url 'item_servico:delete' item_servico.pk %}" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Excluir
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'item_servico:list' %}" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Voltar
+                    </a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-info-circle"></i> Informações do Item de Serviço</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong><i class="bi bi-tag"></i> Nome:</strong><br>{{ item_servico.nome }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong><i class="bi bi-currency-dollar"></i> Preço Unitário:</strong><br>R$ {{ item_servico.preco_unitario }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong><i class="bi bi-box-seam"></i> Quantidade:</strong><br>{{ item_servico.quantidade }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong><i class="bi bi-calculator"></i> Valor Total:</strong><br>R$ {{ item_servico.valor_total }}</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <p><strong><i class="bi bi-card-text"></i> Descrição:</strong><br>{{ item_servico.descricao }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if item_servico.imagem %}
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="bi bi-image"></i> Imagem</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <img src="{{ item_servico.imagem.url }}" alt="{{ item_servico.nome }}" class="img-fluid rounded" style="max-height: 300px;">
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
