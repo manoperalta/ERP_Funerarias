@@ -1,0 +1,353 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Sistema de Gestão Funerária{% endblock %}
+
+{% block extra_css %}
+<style>
+    .create-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    .create-header {
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
+        border-radius: 15px 15px 0 0;
+    }
+    .photo-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #dee2e6;
+    }
+    .photo-upload-area {
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .photo-upload-area:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    .section-divider {
+        border-top: 2px solid #e9ecef;
+        margin: 30px 0 20px 0;
+        position: relative;
+    }
+    .section-title {
+        background: white;
+        padding: 0 15px;
+        position: absolute;
+        top: -12px;
+        left: 20px;
+        font-weight: 600;
+        color: #495057;
+    }
+    .form-floating {
+        margin-bottom: 1rem;
+    }
+    .btn-create {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        padding: 12px 30px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .btn-create:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10 col-lg-8">
+            <div class="create-card">
+                <!-- Header -->
+                <div class="create-header p-4 text-center">
+                    <h2 class="mb-2">
+                        <i class="bi bi-person-plus-fill me-2"></i>{{ title }}
+                    </h2>
+                    <p class="mb-0 opacity-75">{{ subtitle }}</p>
+                </div>
+
+                <!-- Form -->
+                <div class="p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post" enctype="multipart/form-data" id="funcionarioForm">
+                        {% csrf_token %}
+                        
+                        <!-- Seção: Dados Pessoais -->
+                        <div class="row">
+                            <div class="col-12">
+                                <h5 class="text-primary mb-3">
+                                    <i class="bi bi-person me-2"></i>Dados Pessoais
+                                </h5>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating">
+                                    {{ form.nome_completo }}
+                                    <label for="{{ form.nome_completo.id_for_label }}">
+                                        <i class="bi bi-person me-1"></i>{{ form.nome_completo.label }}
+                                    </label>
+                                </div>
+                                {% if form.nome_completo.errors %}
+                                    <div class="text-danger small">{{ form.nome_completo.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    {{ form.first_name }}
+                                    <label for="{{ form.first_name.id_for_label }}">
+                                        <i class="bi bi-person-badge me-1"></i>{{ form.first_name.label }}
+                                    </label>
+                                </div>
+                                {% if form.first_name.errors %}
+                                    <div class="text-danger small">{{ form.first_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    {{ form.last_name }}
+                                    <label for="{{ form.last_name.id_for_label }}">
+                                        <i class="bi bi-person-badge me-1"></i>{{ form.last_name.label }}
+                                    </label>
+                                </div>
+                                {% if form.last_name.errors %}
+                                    <div class="text-danger small">{{ form.last_name.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    {{ form.email }}
+                                    <label for="{{ form.email.id_for_label }}">
+                                        <i class="bi bi-envelope me-1"></i>{{ form.email.label }}
+                                    </label>
+                                </div>
+                                {% if form.email.errors %}
+                                    <div class="text-danger small">{{ form.email.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    {{ form.telefone }}
+                                    <label for="{{ form.telefone.id_for_label }}">
+                                        <i class="bi bi-telephone me-1"></i>{{ form.telefone.label }}
+                                    </label>
+                                </div>
+                                {% if form.telefone.errors %}
+                                    <div class="text-danger small">{{ form.telefone.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Seção: Cargo -->
+                        <div class="section-divider">
+                            <span class="section-title">
+                                <i class="bi bi-briefcase me-1"></i>Cargo e Função
+                            </span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating">
+                                    {{ form.cargo }}
+                                    <label for="{{ form.cargo.id_for_label }}">
+                                        <i class="bi bi-briefcase me-1"></i>{{ form.cargo.label }}
+                                    </label>
+                                </div>
+                                {% if form.cargo.errors %}
+                                    <div class="text-danger small">{{ form.cargo.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Seção: Conta de Acesso -->
+                        <div class="section-divider">
+                            <span class="section-title">
+                                <i class="bi bi-key me-1"></i>Conta de Acesso
+                            </span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div class="form-floating">
+                                    {{ form.username }}
+                                    <label for="{{ form.username.id_for_label }}">
+                                        <i class="bi bi-person-circle me-1"></i>{{ form.username.label }}
+                                    </label>
+                                </div>
+                                {% if form.username.errors %}
+                                    <div class="text-danger small">{{ form.username.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    {{ form.password1 }}
+                                    <label for="{{ form.password1.id_for_label }}">
+                                        <i class="bi bi-lock me-1"></i>{{ form.password1.label }}
+                                    </label>
+                                </div>
+                                {% if form.password1.errors %}
+                                    <div class="text-danger small">{{ form.password1.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating">
+                                    {{ form.password2 }}
+                                    <label for="{{ form.password2.id_for_label }}">
+                                        <i class="bi bi-lock-fill me-1"></i>{{ form.password2.label }}
+                                    </label>
+                                </div>
+                                {% if form.password2.errors %}
+                                    <div class="text-danger small">{{ form.password2.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Seção: Foto do Perfil -->
+                        <div class="section-divider">
+                            <span class="section-title">
+                                <i class="bi bi-camera me-1"></i>Foto do Perfil (Opcional)
+                            </span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <div class="photo-upload-area" onclick="document.getElementById('{{ form.foto_perfil.id_for_label }}').click()">
+                                    <div id="photo-preview" class="d-none">
+                                        <img id="preview-img" class="photo-preview mb-3" src="#" alt="Preview">
+                                    </div>
+                                    <div id="upload-placeholder">
+                                        <i class="bi bi-cloud-upload fs-1 text-muted"></i>
+                                        <p class="mb-0 text-muted">Clique para selecionar uma foto</p>
+                                        <small class="text-muted">JPG, PNG ou GIF (máx. 5MB)</small>
+                                    </div>
+                                    {{ form.foto_perfil }}
+                                </div>
+                                {% if form.foto_perfil.errors %}
+                                    <div class="text-danger small mt-2">{{ form.foto_perfil.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="row mt-4">
+                            <div class="col-12 d-flex justify-content-between">
+                                <a href="{% url 'funcionario:list' %}" class="btn btn-outline-secondary">
+                                    <i class="bi bi-arrow-left me-1"></i>Voltar
+                                </a>
+                                <button type="submit" class="btn btn-create text-white">
+                                    <i class="bi bi-person-plus me-1"></i>Criar Funcionário
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Preview da foto
+    const fotoInput = document.getElementById('{{ form.foto_perfil.id_for_label }}');
+    const photoPreview = document.getElementById('photo-preview');
+    const previewImg = document.getElementById('preview-img');
+    const uploadPlaceholder = document.getElementById('upload-placeholder');
+    
+    fotoInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                photoPreview.classList.remove('d-none');
+                uploadPlaceholder.classList.add('d-none');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+    
+    // Sincronizar nome completo com first_name e last_name
+    const nomeCompletoInput = document.getElementById('{{ form.nome_completo.id_for_label }}');
+    const firstNameInput = document.getElementById('{{ form.first_name.id_for_label }}');
+    const lastNameInput = document.getElementById('{{ form.last_name.id_for_label }}');
+    
+    nomeCompletoInput.addEventListener('blur', function() {
+        const nomeCompleto = this.value.trim();
+        if (nomeCompleto) {
+            const partes = nomeCompleto.split(' ');
+            if (partes.length >= 2) {
+                firstNameInput.value = partes[0];
+                lastNameInput.value = partes.slice(1).join(' ');
+            }
+        }
+    });
+    
+    // Gerar username baseado no nome
+    const usernameInput = document.getElementById('{{ form.username.id_for_label }}');
+    
+    function gerarUsername() {
+        const firstName = firstNameInput.value.trim().toLowerCase();
+        const lastName = lastNameInput.value.trim().toLowerCase();
+        
+        if (firstName && lastName) {
+            const lastNameParts = lastName.split(' ');
+            const username = firstName + '.' + lastNameParts[lastNameParts.length - 1];
+            usernameInput.value = username.replace(/[^a-z0-9.]/g, '');
+        }
+    }
+    
+    firstNameInput.addEventListener('blur', gerarUsername);
+    lastNameInput.addEventListener('blur', gerarUsername);
+    
+    // Máscara para telefone
+    const telefoneInput = document.getElementById('{{ form.telefone.id_for_label }}');
+    telefoneInput.addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 11) {
+            value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        } else if (value.length >= 7) {
+            value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+        } else if (value.length >= 3) {
+            value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+        }
+        e.target.value = value;
+    });
+});
+</script>
+{% endblock %}
+
