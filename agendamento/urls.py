@@ -9,5 +9,7 @@ urlpatterns = [
     path('novo/', views.AgendamentoCreateView.as_view(), name='create'),
     path('<int:pk>/editar/', views.AgendamentoUpdateView.as_view(), name='update'),
     path('<int:pk>/excluir/', views.AgendamentoDeleteView.as_view(), name='delete'),
+    path("public/<int:pk>/", views.AgendamentoPublicDetailView.as_view(), name="public_detail"),
 ]
+
 

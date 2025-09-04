@@ -14,6 +14,87 @@
     </div>
 </div>
 
+<!-- Filtros -->
+<div class="row mb-3">
+    <div class="col-md-4">
+        <form method="get" class="d-flex">
+            <label for="status" class="form-label me-2">Filtrar por Status:</label>
+            <select name="status" id="status" class="form-select me-2" onchange="this.form.submit()">
+                <option value="">Todos</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if value == status_atual %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+</div>
+
+<!-- Resumo Financeiro -->
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card bg-success text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Receitas Pagas</h6>
+                        <h4>R$ {{ receitas_pagas|floatformat:2 }}</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-arrow-up-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Pendentes</h6>
+                        <h4>{{ pendentes_count }}</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-clock fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Despesas</h6>
+                        <h4>R$ {{ despesas_total|floatformat:2 }}</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-arrow-down-circle fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-info text-white">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title">Com Nota Fiscal</h6>
+                        <h4>{{ com_nota_fiscal_count }}</h4>
+                    </div>
+                    <div class="align-self-center">
+                        <i class="bi bi-file-earmark-pdf fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 {% if financeiros %}
     <div class="table-responsive">
         <table class="table table-striped table-hover">
@@ -21,42 +102,105 @@
                 <tr>
                     <th>Pessoa Falecida</th>
                     <th>Tipo</th>
+                    <th>Descrição</th>
                     <th>Valor</th>
                     <th>Vencimento</th>
                     <th>Status</th>
+                    <th>Nota Fiscal</th>
                     <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for financeiro in financeiros %}
                 <tr>
-                    <td>{{ financeiro.pessoa_falecida.nome }}</td>
                     <td>
-                        {% if financeiro.tipo == 'receita' %}
-                            <span class="badge bg-success">Receita</span>
-                        {% else %}
-                            <span class="badge bg-danger">Despesa</span>
+                        <strong>{{ financeiro.pessoa_falecida.nome }}</strong>
+                        {% if financeiro.pessoa_falecida.familia %}
+                            <br><small class="text-muted">{{ financeiro.pessoa_falecida.familia.nome_responsavel }}</small>
                         {% endif %}
                     </td>
-                    <td>R$ {{ financeiro.valor }}</td>
+                    <td>
+                        {% if financeiro.tipo == 'receita' %}
+                            <span class="badge bg-success">
+                                <i class="bi bi-arrow-up me-1"></i>Receita
+                            </span>
+                        {% else %}
+                            <span class="badge bg-danger">
+                                <i class="bi bi-arrow-down me-1"></i>Despesa
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {{ financeiro.descricao|truncatechars:50 }}
+                        {% if financeiro.servico_contratado %}
+                            <br><small class="text-info">
+                                <i class="bi bi-link me-1"></i>
+                                Vinculado ao serviço
+                            </small>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong class="{% if financeiro.tipo == 'receita' %}text-success{% else %}text-danger{% endif %}">
+                            R$ {{ financeiro.valor }}
+                        </strong>
+                    </td>
                     <td>{{ financeiro.data_vencimento|date:"d/m/Y" }}</td>
                     <td>
                         {% if financeiro.status == 'pago' %}
-                            <span class="badge bg-success">Pago</span>
+                            <span class="badge bg-success">
+                                <i class="bi bi-check me-1"></i>Pago
+                            </span>
+                            {% if financeiro.data_pagamento %}
+                                <br><small class="text-muted">{{ financeiro.data_pagamento|date:"d/m/Y H:i" }}</small>
+                            {% endif %}
                         {% elif financeiro.status == 'pendente' %}
-                            <span class="badge bg-warning">Pendente</span>
+                            <span class="badge bg-warning">
+                                <i class="bi bi-clock me-1"></i>Pendente
+                            </span>
                         {% else %}
-                            <span class="badge bg-secondary">Cancelado</span>
+                            <span class="badge bg-secondary">
+                                <i class="bi bi-x me-1"></i>Cancelado
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if financeiro.tem_nota_fiscal %}
+                            <a href="{% url 'financeiro:nota_fiscal' financeiro.pk %}" 
+                               class="btn btn-sm btn-outline-primary" 
+                               title="Visualizar Nota Fiscal" target="_blank">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                                NF {{ financeiro.numero_nota_fiscal }}
+                            </a>
+                        {% elif financeiro.servico_contratado %}
+                            <a href="{% url 'servico_contratado:visualizar_pdf' financeiro.servico_contratado.pk %}" 
+                               class="btn btn-sm btn-outline-primary" 
+                               title="Visualizar PDF do Serviço" target="_blank">
+                                <i class="bi bi-file-earmark-pdf"></i>
+                                PDF Serviço
+                            </a>
+                        {% else %}
+                            <span class="text-muted">
+                                <i class="bi bi-dash"></i>
+                            </span>
                         {% endif %}
                     </td>
                     <td>
                         <div class="btn-group" role="group">
-                            <a href="{% url 'financeiro:detail' financeiro.pk %}" class="btn btn-sm btn-outline-info">
+                            <a href="{% url 'financeiro:detail' financeiro.pk %}" 
+                               class="btn btn-sm btn-outline-info" title="Ver Detalhes">
                                 <i class="bi bi-eye"></i>
                             </a>
-                            <a href="{% url 'financeiro:update' financeiro.pk %}" class="btn btn-sm btn-outline-warning">
+                            <a href="{% url 'financeiro:update' financeiro.pk %}" 
+                               class="btn btn-sm btn-outline-warning" title="Editar">
                                 <i class="bi bi-pencil"></i>
                             </a>
+                            {% if financeiro.status == 'pendente' %}
+                                <button type="button" class="btn btn-sm btn-outline-success" 
+                                        title="Marcar como Pago" 
+                                        onclick="marcarComoPago({{ financeiro.pk }})">
+                                    <i class="bi bi-check"></i>
+                                </button>
+                            {% endif %}
                             <a href="{% url 'financeiro:delete' financeiro.pk %}" class="btn btn-sm btn-outline-danger">
                                 <i class="bi bi-trash"></i>
                             </a>
@@ -70,8 +214,58 @@
 {% else %}
     <div class="alert alert-info" role="alert">
         <i class="bi bi-info-circle me-2"></i>
-        Nenhum registro financeiro. <a href="{% url 'financeiro:create' %}" class="alert-link">Cadastre o primeiro registro</a>.
+        Nenhum registro financeiro encontrado. Comece criando um novo registro financeiro ou aguarde a criação automática através dos serviços contratados.
+        <br><br>
+        <a href="{% url 'financeiro:create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle me-1"></i>
+            Criar Primeiro Registro
+        </a>
     </div>
 {% endif %}
+
+<!-- Modal para marcar como pago -->
+<div class="modal fade" id="pagoModal" tabindex="-1" aria-labelledby="pagoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pagoModalLabel">Marcar como Pago</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="pagoForm" method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="forma_pagamento" class="form-label">Forma de Pagamento:</label>
+                        <select name="forma_pagamento" id="forma_pagamento" class="form-select" required>
+                            <option value="">Selecione...</option>
+                            <option value="dinheiro">Dinheiro</option>
+                            <option value="cartao_credito">Cartão de Crédito</option>
+                            <option value="cartao_debito">Cartão de Débito</option>
+                            <option value="pix">PIX</option>
+                            <option value="transferencia">Transferência Bancária</option>
+                            <option value="boleto">Boleto Bancário</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check me-1"></i>
+                        Confirmar Pagamento
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function marcarComoPago(financeiroId) {
+    const form = document.getElementById('pagoForm');
+    form.action = `/financeiro/${financeiroId}/marcar-pago/`;
+    const modal = new bootstrap.Modal(document.getElementById('pagoModal'));
+    modal.show();
+}
+</script>
 {% endblock %}
 

@@ -23,15 +23,15 @@
                     {% csrf_token %}
                     
                     <div class="mb-3 text-center">
-                        {% if user.profile_picture %}
-                            <img src="{{ user.profile_picture.url }}" alt="Foto de Perfil" class="img-thumbnail rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                        {% if user.foto_perfil %}
+                            <img src="{{ user.foto_perfil.url }}" alt="Foto de Perfil" class="img-thumbnail rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
                         {% else %}
-                            <img src="{% static 'img/default_avatar.png' %}" alt="Foto de Perfil Padrão" class="img-thumbnail rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                            <img src="{% static 'img/default_profile.png' %}" alt="Foto de Perfil Padrão" class="img-thumbnail rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
                         {% endif %}
-                        <label for="{{ form.profile_picture.id_for_label }}" class="form-label d-block">
+                        <label for="{{ form.foto_perfil.id_for_label }}" class="form-label d-block">
                             <i class="bi bi-camera me-1"></i>Alterar Foto de Perfil
                         </label>
-                        {{ form.profile_picture }}
+                        {{ form.foto_perfil }}
                         {% if form.profile_picture.errors %}
                             <div class="text-danger small">
                                 {% for error in form.profile_picture.errors %}

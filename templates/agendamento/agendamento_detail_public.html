@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Última Homenagem a {{ agendamento.pessoa_falecida.nome }} - {{ configuracao_funeraria.nome_funeraria|default:"Funerária" }}</title>
+    
+    <!-- Meta tags para compartilhamento social -->
+    <meta property="og:title" content="Última Homenagem a {{ agendamento.pessoa_falecida.nome }}">
+    <meta property="og:description" content="Convidamos você a participar da última homenagem. Velório: {{ agendamento.data_agendamento|date:'d/m/Y' }} às {{ agendamento.hora_agendamento|time:'H:i' }} em {{ agendamento.local_velorio }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    {% if agendamento.pessoa_falecida.imagem %}
+        <meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ agendamento.pessoa_falecida.imagem.url }}">
+    {% endif %}
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Última Homenagem a {{ agendamento.pessoa_falecida.nome }}">
+    <meta name="twitter:description" content="Convidamos você a participar da última homenagem. Velório: {{ agendamento.data_agendamento|date:'d/m/Y' }} às {{ agendamento.hora_agendamento|time:'H:i' }}">
+    {% if agendamento.pessoa_falecida.imagem %}
+        <meta name="twitter:image" content="{{ request.scheme }}://{{ request.get_host }}{{ agendamento.pessoa_falecida.imagem.url }}">
+    {% endif %}
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- QR Code Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    
+    <style>
+        :root {
+            --cor-primaria: {{ configuracao_funeraria.cor_primaria|default:"#2c3e50" }};
+            --cor-secundaria: {{ configuracao_funeraria.cor_secundaria|default:"#34495e" }};
+            --cor-fundo: #f8f9fa;
+            --sombra-leve: 0 2px 10px rgba(0,0,0,0.1);
+            --sombra-media: 0 4px 20px rgba(0,0,0,0.15);
+        }
+        
+        body {
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .memorial-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: var(--sombra-media);
+            overflow: hidden;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .memorial-header {
+            background: linear-gradient(135deg, var(--cor-primaria), var(--cor-secundaria));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .memorial-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            opacity: 0.3;
+        }
+        
+        .memorial-header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+            position: relative;
+        }
+        
+        .memorial-header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            position: relative;
+        }
+        
+        .photo-container {
+            position: relative;
+            margin: -50px auto 2rem;
+            width: 150px;
+            height: 150px;
+        }
+        
+        .memorial-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid white;
+            box-shadow: var(--sombra-media);
+            transition: transform 0.3s ease;
+        }
+        
+        .memorial-photo:hover {
+            transform: scale(1.05);
+        }
+        
+        .memorial-body {
+            padding: 2rem;
+        }
+        
+        .memorial-message {
+            font-size: 1.2rem;
+            color: #555;
+            text-align: center;
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .info-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--sombra-leve);
+        }
+        
+        .info-card i {
+            font-size: 2rem;
+            color: var(--cor-primaria);
+            margin-bottom: 1rem;
+        }
+        
+        .info-card h5 {
+            color: var(--cor-primaria);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .info-card p {
+            margin: 0;
+            color: #666;
+        }
+        
+        .share-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .share-section h3 {
+            color: var(--cor-primaria);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .share-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--sombra-leve);
+        }
+        
+        .share-btn.whatsapp {
+            background: #25D366;
+            color: white;
+        }
+        
+        .share-btn.twitter {
+            background: #1DA1F2;
+            color: white;
+        }
+        
+        .share-btn.facebook {
+            background: #4267B2;
+            color: white;
+        }
+        
+        .share-btn.email {
+            background: #EA4335;
+            color: white;
+        }
+        
+        .share-btn.copy {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .qr-section {
+            text-align: center;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            border: 2px dashed #dee2e6;
+        }
+        
+        .qr-section h5 {
+            color: var(--cor-primaria);
+            margin-bottom: 1rem;
+        }
+        
+        #qrcode canvas {
+            border-radius: 10px;
+            box-shadow: var(--sombra-leve);
+        }
+        
+        .link-display {
+            background: white;
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .link-display .form-control {
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .memorial-header h1 {
+                font-size: 2rem;
+            }
+            
+            .memorial-body {
+                padding: 1rem;
+            }
+            
+            .share-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .share-btn {
+                width: 200px;
+                justify-content: center;
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="memorial-card fade-in">
+            <div class="memorial-header">
+                <h1>Última Homenagem</h1>
+                <p class="subtitle">{{ agendamento.pessoa_falecida.nome }}</p>
+            </div>
+            
+            <div class="memorial-body">
+                <div class="photo-container">
+                    {% if agendamento.pessoa_falecida.imagem %}
+                        <img src="{{ agendamento.pessoa_falecida.imagem.url }}" class="memorial-photo" alt="Foto de {{ agendamento.pessoa_falecida.nome }}">
+                    {% else %}
+                        <img src="/static/img/default_placeholder.png" class="memorial-photo" alt="Foto Padrão">
+                    {% endif %}
+                </div>
+                
+                <div class="memorial-message">
+                    Convidamos você a participar da última homenagem a <strong>{{ agendamento.pessoa_falecida.nome }}</strong>.<br>
+                    Sua presença será muito importante para nós neste momento de despedida.
+                </div>
+                
+                <div class="info-grid">
+                    <div class="info-card">
+                        <i class="bi bi-calendar-heart"></i>
+                        <h5>Velório</h5>
+                        <p><strong>{{ agendamento.data_agendamento|date:"d/m/Y" }}</strong></p>
+                        <p>às {{ agendamento.hora_agendamento|time:"H:i" }}</p>
+                        <p>{{ agendamento.local_velorio }}</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <i class="bi bi-geo-alt"></i>
+                        <h5>Sepultamento</h5>
+                        <p><strong>{{ agendamento.data_sepultamento|date:"d/m/Y" }}</strong></p>
+                        <p>{{ agendamento.local_sepultamento }}</p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <i class="bi bi-person-badge"></i>
+                        <h5>Responsável</h5>
+                        <p>{{ agendamento.funcionario.nome }}</p>
+                        {% if agendamento.funcionario.telefone %}
+                            <p><i class="bi bi-telephone"></i> {{ agendamento.funcionario.telefone }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="share-section">
+                    <h3><i class="bi bi-share"></i> Compartilhe esta homenagem</h3>
+                    
+                    <!-- QR Code Section -->
+                    <div class="qr-section mb-4">
+                        <h5>Escaneie o QR Code para compartilhar</h5>
+                        <div id="qrcode" class="d-flex justify-content-center mb-3"></div>
+                        <p class="text-muted small">Escaneie com a câmera do seu celular para abrir esta página</p>
+                    </div>
+                    
+                    <div class="share-buttons">
+                        <button class="share-btn whatsapp" id="share-whatsapp">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                        <button class="share-btn facebook" id="share-facebook">
+                            <i class="fab fa-facebook"></i> Facebook
+                        </button>
+                        <button class="share-btn twitter" id="share-twitter">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </button>
+                        <button class="share-btn email" id="share-email">
+                            <i class="bi bi-envelope"></i> Email
+                        </button>
+                        <button class="share-btn copy" id="copy-link">
+                            <i class="bi bi-link-45deg"></i> Copiar Link
+                        </button>
+                    </div>
+                    
+                    <!-- Link Display -->
+                    <div class="link-display mt-3">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="share-url" readonly>
+                            <button class="btn btn-outline-secondary" type="button" id="copy-url-btn">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const shareUrl = window.location.href;
+            const falecidoNome = "{{ agendamento.pessoa_falecida.nome }}";
+            const velorioData = "{{ agendamento.data_agendamento|date:"d/m/Y" }}";
+            const velorioHora = "{{ agendamento.hora_agendamento|time:"H:i" }}";
+            const velorioLocal = "{{ agendamento.local_velorio }}";
+            const sepultamentoData = "{{ agendamento.data_sepultamento|date:"d/m/Y" }}";
+            const sepultamentoLocal = "{{ agendamento.local_sepultamento }}";
+
+            const shareText = `Convidamos para a última homenagem a ${falecidoNome}.\n\nVelório: ${velorioData} às ${velorioHora}\nLocal: ${velorioLocal}\n\nSepultamento: ${sepultamentoData}\nLocal: ${sepultamentoLocal}\n\nMais informações: ${shareUrl}`;
+            
+            const shareTitle = `Última Homenagem a ${falecidoNome}`;
+
+            // Populate share URL input
+            document.getElementById('share-url').value = shareUrl;
+
+            // Generate QR Code
+            QRCode.toCanvas(document.getElementById('qrcode'), shareUrl, {
+                width: 200,
+                margin: 2,
+                color: {
+                    dark: '#2c3e50',
+                    light: '#ffffff'
+                }
+            }, function (error) {
+                if (error) console.error(error);
+            });
+
+            // Copy URL functionality
+            function copyToClipboard(text, button) {
+                navigator.clipboard.writeText(text).then(function() {
+                    const originalHTML = button.innerHTML;
+                    const originalBg = button.style.background;
+                    button.innerHTML = '<i class="bi bi-check"></i> Copiado!';
+                    button.style.background = '#28a745';
+                    
+                    setTimeout(function() {
+                        button.innerHTML = originalHTML;
+                        button.style.background = originalBg;
+                    }, 2000);
+                }).catch(function() {
+                    alert('Não foi possível copiar. Tente selecionar e copiar manualmente: ' + text);
+                });
+            }
+
+            // WhatsApp
+            document.getElementById('share-whatsapp').addEventListener('click', function() {
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`, '_blank');
+            });
+
+            // Facebook
+            document.getElementById('share-facebook').addEventListener('click', function() {
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+            });
+
+            // Twitter
+            document.getElementById('share-twitter').addEventListener('click', function() {
+                const twitterText = `${shareTitle}\n\nVelório: ${velorioData} às ${velorioHora} em ${velorioLocal}\nSepultamento: ${sepultamentoData} em ${sepultamentoLocal}`;
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+            });
+
+            // Email
+            document.getElementById('share-email').addEventListener('click', function() {
+                const subject = encodeURIComponent(shareTitle);
+                const body = encodeURIComponent(shareText);
+                window.location.href = `mailto:?subject=${subject}&body=${body}`;
+            });
+
+            // Copy Link (main button)
+            document.getElementById('copy-link').addEventListener('click', function() {
+                copyToClipboard(shareUrl, this);
+            });
+
+            // Copy URL (input button)
+            document.getElementById('copy-url-btn').addEventListener('click', function() {
+                copyToClipboard(shareUrl, this);
+            });
+        });
+    </script>
+</body>
+</html>
+

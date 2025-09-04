@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Exclusão de Categoria - Sistema Funerária{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Confirmar Exclusão</h2>
+    <div class="alert alert-warning" role="alert">
+        Tem certeza que deseja excluir a categoria "<strong>{{ object.nome }}</strong>"?
+        Todos os produtos associados a esta categoria precisarão ser reatribuídos ou excluídos.
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+        <a href="{% url 'estoque:categoria_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
+
+

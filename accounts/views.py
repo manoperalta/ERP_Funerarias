@@ -89,8 +89,13 @@ def dashboard_admin(request):
     from familia.models import Familia
     from pessoa_falecida.models import PessoaFalecida
     from funcionario.models import Funcionario
+    from item_servico.models import ItemServico
+    from agendamento.models import Agendamento
+    from financeiro.models import Financeiro
+    from servico_contratado.models import ServicoContratado
+    from datetime import datetime, timedelta
     from django.urls import reverse
-    from django.db.models import Q
+    from django.db.models import Q, Sum
     
     # Funcionalidade de busca
     search_results = []
@@ -122,13 +127,13 @@ def dashboard_admin(request):
                     'name': falecido.nome,
                     'type': 'Falecido',
                     'description': f'Família: {falecido.familia.nome_responsavel} | Data: {falecido.data_falecimento.strftime("%d/%m/%Y")}',
-                    'url': reverse('pessoa_falecida:detail', kwargs={'pk': falecido.pk})
+                    'url': reverse('pessoa_falecida:detail', kwargs={'pk': falecido.pk}),
+                    'imagem_url': falecido.imagem.url if falecido.imagem else None
                 })
         
         elif search_type == 'funcionario':
             funcionarios = Funcionario.objects.filter(
                 Q(nome__icontains=search_query) |
-                Q(cpf__icontains=search_query) |
                 Q(telefone__icontains=search_query)
             )[:10]
             for funcionario in funcionarios:
@@ -136,22 +141,58 @@ def dashboard_admin(request):
                     'name': funcionario.nome,
                     'type': 'Funcionário',
                     'description': f'Cargo: {funcionario.cargo} | Telefone: {funcionario.telefone}',
-                    'url': reverse('funcionario:detail', kwargs={'pk': funcionario.pk})
+                    'url': reverse('funcionario:detail', kwargs={'pk': funcionario.pk}),
+                    'imagem_url': funcionario.usuario.foto_perfil.url if funcionario.usuario and funcionario.usuario.foto_perfil else None
                 })
+    
+    # Estatísticas para administradores
+    total_funcionarios = Funcionario.objects.count()
+    total_familias = Familia.objects.count()
+    total_falecidos = PessoaFalecida.objects.count()
+    total_itens = ItemServico.objects.count()
+    total_agendamentos = Agendamento.objects.count()
+    
+    # Receitas do mês atual
+    hoje = datetime.now()
+    inicio_mes = hoje.replace(day=1)
+    receitas_mes = Financeiro.objects.filter(
+        tipo='receita',
+        status='pago',
+        data_pagamento__gte=inicio_mes
+    ).aggregate(total=Sum('valor'))['total'] or 0
+    
+    # Serviços contratados no mês
+    servicos_mes = ServicoContratado.objects.filter(
+        data_contratacao__gte=inicio_mes
+    ).count()
+    
+    # Próximos agendamentos (próximos 7 dias)
+    proxima_semana = hoje.date() + timedelta(days=7)
+    agendamentos_proximos = Agendamento.objects.filter(
+        data_agendamento__range=[hoje.date(), proxima_semana]
+    ).order_by('data_agendamento', 'hora_agendamento')[:5]
+
+    # Funcionários recentes
+    funcionarios_recentes = Funcionario.objects.all().order_by('-id')[:4]
     
     context = {
         'user': request.user,
+        'permissions': request.user.get_dashboard_permissions(),
         'dashboard_type': 'admin',
-        'total_funcionarios': Funcionario.objects.count(),
-        'total_familias': Familia.objects.count(),
-        'total_agendamentos': 0,
-        'total_itens': 0,
-        'receita_mensal': "0,00",
+        'total_funcionarios': total_funcionarios,
+        'total_familias': total_familias,
+        'total_falecidos': total_falecidos,
+        'total_itens': total_itens,
+        'total_agendamentos': total_agendamentos,
+        'receitas_mes': receitas_mes,
+        'servicos_mes': servicos_mes,
+        'agendamentos_proximos': agendamentos_proximos,
+        'funcionarios_recentes': funcionarios_recentes,
         'search_results': search_results,
         'search_query': search_query,
         'search_type': search_type,
     }
-    return render(request, 'accounts/dashboard_admin_working.html', context)
+    return render(request, 'accounts/dashboard_admin.html', context)
 
 
 @login_required
@@ -161,19 +202,38 @@ def dashboard_vendedor(request):
     from pessoa_falecida.models import PessoaFalecida
     from item_servico.models import ItemServico
     from agendamento.models import Agendamento
+    from financeiro.models import Financeiro
+    from servico_contratado.models import ServicoContratado
     from datetime import datetime, timedelta
+    from django.db.models import Sum, Count
     
     # Estatísticas para vendedores
     total_familias = Familia.objects.count()
     total_falecidos = PessoaFalecida.objects.count()
     total_itens = ItemServico.objects.count()
+    total_agendamentos = Agendamento.objects.count()
+    
+    # Receitas do mês atual
+    hoje = datetime.now()
+    inicio_mes = hoje.replace(day=1)
+    receitas_mes = Financeiro.objects.filter(
+        tipo='receita',
+        status='pago',
+        data_pagamento__gte=inicio_mes
+    ).aggregate(total=Sum('valor'))['total'] or 0
+    
+    # Serviços contratados no mês
+    servicos_mes = ServicoContratado.objects.filter(
+        data_contratacao__gte=inicio_mes
+    ).count()
     
     # Próximos agendamentos (próximos 7 dias)
-    hoje = datetime.now().date()
-    proxima_semana = hoje + timedelta(days=7)
+    proxima_semana = hoje.date() + timedelta(days=7)
     agendamentos_proximos = Agendamento.objects.filter(
-        data_agendamento__range=[hoje, proxima_semana]
+        data_agendamento__range=[hoje.date(), proxima_semana]
     ).order_by('data_agendamento', 'hora_agendamento')[:5]
+
+    itens_servico = ItemServico.objects.all()[:5]
     
     context = {
         'user': request.user,
@@ -182,7 +242,11 @@ def dashboard_vendedor(request):
         'total_familias': total_familias,
         'total_falecidos': total_falecidos,
         'total_itens': total_itens,
+        'total_agendamentos': total_agendamentos,
+        'receitas_mes': receitas_mes,
+        'servicos_mes': servicos_mes,
         'agendamentos_proximos': agendamentos_proximos,
+        'itens_servico': itens_servico,
     }
     return render(request, 'accounts/dashboard_vendedor.html', context)
 
@@ -193,10 +257,28 @@ def dashboard_funcionario(request):
     from agendamento.models import Agendamento
     from servico_contratado.models import ServicoContratado
     from pessoa_falecida.models import PessoaFalecida
+    from funcionario.models import Funcionario
+    from financeiro.models import Financeiro
     from datetime import datetime, timedelta
+    from django.db.models import Sum, Count
     
     hoje = datetime.now().date()
     proximos_7_dias = hoje + timedelta(days=7)
+    
+    # Estatísticas gerais para funcionários
+    total_funcionarios = Funcionario.objects.count()
+    total_agendamentos = Agendamento.objects.count()
+    
+    # Agendamentos pendentes (próximos 7 dias)
+    agendamentos_pendentes = Agendamento.objects.filter(
+        data_agendamento__range=[hoje, proximos_7_dias]
+    ).count()
+    
+    # Tarefas concluídas no mês (usando serviços contratados como proxy)
+    inicio_mes = datetime.now().replace(day=1)
+    tarefas_concluidas = ServicoContratado.objects.filter(
+        data_contratacao__gte=inicio_mes
+    ).count()
     
     # Buscar todos os sepultamentos próximos (não apenas do funcionário)
     # Funcionários operacionais trabalham em equipe nos sepultamentos
@@ -211,8 +293,7 @@ def dashboard_funcionario(request):
         # Buscar serviços contratados relacionados ao falecido
         servicos_contratados = ServicoContratado.objects.filter(
             pessoa_falecida=agendamento.pessoa_falecida
-        ).select_related('item_servico')
-        
+        ).prefetch_related('itens__item_servico')
         # Determinar tarefas específicas baseadas no cargo do usuário
         tarefas_usuario = []
         cargo = request.user.cargo
@@ -269,6 +350,10 @@ def dashboard_funcionario(request):
         'permissions': request.user.get_dashboard_permissions(),
         'dashboard_type': 'funcionario',
         'cargo': request.user.get_cargo_display(),
+        'total_funcionarios': total_funcionarios,
+        'total_agendamentos': total_agendamentos,
+        'agendamentos_pendentes': agendamentos_pendentes,
+        'tarefas_concluidas': tarefas_concluidas,
         'todo_cards': todo_cards,
         'total_sepultamentos': total_sepultamentos,
         'sepultamentos_hoje': sepultamentos_hoje,

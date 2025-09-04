@@ -1,92 +1,383 @@
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Sistema Funerária{% endblock %}
+
+{% block extra_css %}
+<style>
+    .formset-row {
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        background-color: #f8f9fa;
+    }
+    
+    .formset-row.to-delete {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+    }
+    
+    .delete-row {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+    
+    .add-row {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+    
+    .total-section {
+        background-color: #e9ecef;
+        border: 2px solid #6c757d;
+        border-radius: 0.375rem;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+    
+    .total-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+    
+    .total-row.final {
+        font-weight: bold;
+        font-size: 1.2rem;
+        border-top: 2px solid #6c757d;
+        padding-top: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .valor-display {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="mb-0">{{ title|default:"Serviço Contratado" }}</h4>
-                </div>
-                <div class="card-body">
-                    <form method="post">
-                        {% csrf_token %}
-                        
-                        <div class="mb-3">
-                            <label for="{{ form.pessoa_falecida.id_for_label }}" class="form-label">{{ form.pessoa_falecida.label }}</label>
-                            {{ form.pessoa_falecida }}
-                            {% if form.pessoa_falecida.errors %}
-                                <div class="text-danger">
-                                    {% for error in form.pessoa_falecida.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="{{ form.item_servico.id_for_label }}" class="form-label">{{ form.item_servico.label }}</label>
-                            {{ form.item_servico }}
-                            {% if form.item_servico.errors %}
-                                <div class="text-danger">
-                                    {% for error in form.item_servico.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="{{ form.descricao_adicional.id_for_label }}" class="form-label">{{ form.descricao_adicional.label }}</label>
-                            {{ form.descricao_adicional }}
-                            {% if form.descricao_adicional.errors %}
-                                <div class="text-danger">
-                                    {% for error in form.descricao_adicional.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="{{ form.valor_final.id_for_label }}" class="form-label">{{ form.valor_final.label }}</label>
-                            {{ form.valor_final }}
-                            {% if form.valor_final.errors %}
-                                <div class="text-danger">
-                                    {% for error in form.valor_final.errors %}
-                                        <small>{{ error }}</small>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                        </div>
-
-                        {% if form.non_field_errors %}
-                            <div class="alert alert-danger">
-                                {% for error in form.non_field_errors %}
-                                    <small>{{ error }}</small>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-
-                        <div class="d-flex justify-content-between">
-                            <a href="{% url 'servico_contratado:list' %}" class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Voltar
-                            </a>
-                            {% if user.cargo == 'adm' or user.cargo == 'vendedor' %}
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Salvar
-                                </button>
-                            {% else %}
-                                <button type="button" class="btn btn-secondary" disabled title="Apenas administradores e vendedores podem salvar serviços contratados">
-                                    <i class="fas fa-lock"></i> Acesso Restrito
-                                </button>
-                            {% endif %}
-                        </div>
-                    </form>
-                </div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1><i class="bi bi-clipboard-check"></i> {{ title }}</h1>
+                <a href="{% url 'servico_contratado:list' %}" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Voltar
+                </a>
             </div>
         </div>
     </div>
+
+    <form method="post" id="servico-form">
+        {% csrf_token %}
+        
+        <div class="row">
+            <div class="col-md-8">
+                <!-- Dados Principais -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5><i class="bi bi-person"></i> Dados Principais</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.pessoa_falecida.id_for_label }}" class="form-label">
+                                        {{ form.pessoa_falecida.label }}
+                                    </label>
+                                    {{ form.pessoa_falecida }}
+                                    {% if form.pessoa_falecida.errors %}
+                                        <div class="text-danger">{{ form.pessoa_falecida.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="{{ form.taxa_imposto.id_for_label }}" class="form-label">
+                                        {{ form.taxa_imposto.label }}
+                                    </label>
+                                    {{ form.taxa_imposto }}
+                                    {% if form.taxa_imposto.errors %}
+                                        <div class="text-danger">{{ form.taxa_imposto.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label for="{{ form.descricao_adicional.id_for_label }}" class="form-label">
+                                        {{ form.descricao_adicional.label }}
+                                    </label>
+                                    {{ form.descricao_adicional }}
+                                    {% if form.descricao_adicional.errors %}
+                                        <div class="text-danger">{{ form.descricao_adicional.errors }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Itens de Serviço -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                        <h5><i class="bi bi-box"></i> Itens de Serviço</h5>
+                        <button type="button" class="btn btn-light btn-sm add-row" onclick="addFormsetRow()">
+                            <i class="bi bi-plus"></i> Adicionar Item
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        {{ formset.management_form }}
+                        <div id="formset-container">
+                            {% for form in formset %}
+                                <div class="formset-row" data-form-index="{{ forloop.counter0 }}">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                            <div class="mb-3">
+                                                <label class="form-label">{{ form.item_servico.label }}</label>
+                                                {{ form.item_servico }}
+                                                {% if form.item_servico.errors %}
+                                                    <div class="text-danger">{{ form.item_servico.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="mb-3">
+                                                <label class="form-label">{{ form.quantidade.label }}</label>
+                                                {{ form.quantidade }}
+                                                {% if form.quantidade.errors %}
+                                                    <div class="text-danger">{{ form.quantidade.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="mb-3">
+                                                <label class="form-label">{{ form.valor_unitario.label }}</label>
+                                                {{ form.valor_unitario }}
+                                                {% if form.valor_unitario.errors %}
+                                                    <div class="text-danger">{{ form.valor_unitario.errors }}</div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="mb-3">
+                                                <label class="form-label">Valor Total</label>
+                                                <input type="text" class="form-control valor-total-display" readonly value="R$ 0,00">
+                                            </div>
+                                            {% if formset.can_delete %}
+                                                <div class="form-check">
+                                                    {{ form.DELETE }}
+                                                    <label class="form-check-label text-danger" for="{{ form.DELETE.id_for_label }}">
+                                                        Excluir
+                                                    </label>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% for hidden in form.hidden_fields %}
+                                        {{ hidden }}
+                                    {% endfor %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Resumo dos Totais -->
+            <div class="col-md-4">
+                <div class="card sticky-top">
+                    <div class="card-header bg-info text-white">
+                        <h5><i class="bi bi-calculator"></i> Resumo dos Totais</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="total-section">
+                            <div class="total-row">
+                                <span>Subtotal:</span>
+                                <span class="valor-display" id="subtotal-display">R$ 0,00</span>
+                            </div>
+                            <div class="total-row">
+                                <span>Imposto (<span id="taxa-display">10</span>%):</span>
+                                <span class="valor-display" id="imposto-display">R$ 0,00</span>
+                            </div>
+                            <div class="total-row final">
+                                <span>TOTAL:</span>
+                                <span class="valor-display" id="total-display">R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <div class="d-grid gap-2">
+                            {% if user.cargo == 'adm' or user.cargo == 'vendedor' %}
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-circle"></i> Salvar
+                                </button>
+                            {% else %}
+                                <button type="button" class="btn btn-secondary" disabled title="Apenas administradores e vendedores podem salvar serviços contratados">
+                                    <i class="bi bi-lock"></i> Acesso Restrito
+                                </button>
+                            {% endif %}
+                            <a href="{% url 'servico_contratado:list' %}" class="btn btn-secondary">
+                                <i class="bi bi-x-circle"></i> Cancelar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
 </div>
+
+<script>
+let formsetIndex = {{ formset.total_form_count }};
+
+function updateValorUnitario(selectElement) {
+    const itemId = selectElement.value;
+    const row = selectElement.closest('.formset-row');
+    const valorUnitarioInput = row.querySelector('.valor-unitario-input');
+    
+    if (itemId) {
+        fetch(`/servicos-contratados/api/item-preco/${itemId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.preco) {
+                    valorUnitarioInput.value = data.preco.toFixed(2);
+                    calculateRowTotal(row);
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao buscar preço:', error);
+            });
+    } else {
+        valorUnitarioInput.value = '';
+        calculateRowTotal(row);
+    }
+}
+
+function calculateRowTotal(row) {
+    const quantidade = parseFloat(row.querySelector('.quantidade-input').value) || 0;
+    const valorUnitario = parseFloat(row.querySelector('.valor-unitario-input').value) || 0;
+    const valorTotal = quantidade * valorUnitario;
+    
+    row.querySelector('.valor-total-display').value = `R$ ${valorTotal.toFixed(2).replace('.', ',')}`;
+    calculateGrandTotal();
+}
+
+function calculateGrandTotal() {
+    let subtotal = 0;
+    
+    document.querySelectorAll('.formset-row:not(.to-delete)').forEach(row => {
+        const deleteCheckbox = row.querySelector('input[name$="-DELETE"]');
+        if (!deleteCheckbox || !deleteCheckbox.checked) {
+            const quantidade = parseFloat(row.querySelector('.quantidade-input').value) || 0;
+            const valorUnitario = parseFloat(row.querySelector('.valor-unitario-input').value) || 0;
+            subtotal += quantidade * valorUnitario;
+        }
+    });
+    
+    const taxaImposto = parseFloat(document.getElementById('id_taxa_imposto').value) || 0;
+    const valorImposto = (subtotal * taxaImposto) / 100;
+    const total = subtotal + valorImposto;
+    
+    document.getElementById('subtotal-display').textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+    document.getElementById('taxa-display').textContent = taxaImposto.toFixed(1);
+    document.getElementById('imposto-display').textContent = `R$ ${valorImposto.toFixed(2).replace('.', ',')}`;
+    document.getElementById('total-display').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+}
+
+function addFormsetRow() {
+    const container = document.getElementById('formset-container');
+    const totalForms = document.getElementById('id_itens-TOTAL_FORMS');
+    const newFormHtml = `
+        <div class="formset-row" data-form-index="${formsetIndex}">
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="mb-3">
+                        <label class="form-label">Item/Serviço</label>
+                        <select name="itens-${formsetIndex}-item_servico" class="form-select item-servico-select" onchange="updateValorUnitario(this)">
+                            <option value="">Selecione um item/serviço</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label class="form-label">Quantidade</label>
+                        <input type="number" name="itens-${formsetIndex}-quantidade" class="form-control quantidade-input" min="1" value="1" onchange="calculateRowTotal(this.closest('.formset-row'))">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="mb-3">
+                        <label class="form-label">Valor Unitário (R$)</label>
+                        <input type="number" name="itens-${formsetIndex}-valor_unitario" class="form-control valor-unitario-input" step="0.01" min="0" readonly>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-3">
+                        <label class="form-label">Valor Total</label>
+                        <input type="text" class="form-control valor-total-display" readonly value="R$ 0,00">
+                    </div>
+                    <div class="form-check">
+                        <input type="checkbox" name="itens-${formsetIndex}-DELETE" class="form-check-input" onchange="toggleDeleteRow(this)">
+                        <label class="form-check-label text-danger">Excluir</label>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" name="itens-${formsetIndex}-id">
+        </div>
+    `;
+    
+    container.insertAdjacentHTML('beforeend', newFormHtml);
+    totalForms.value = parseInt(totalForms.value) + 1;
+    formsetIndex++;
+}
+
+function toggleDeleteRow(checkbox) {
+    const row = checkbox.closest('.formset-row');
+    if (checkbox.checked) {
+        row.classList.add('to-delete');
+    } else {
+        row.classList.remove('to-delete');
+    }
+    calculateGrandTotal();
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Calcular totais iniciais
+    document.querySelectorAll('.formset-row').forEach(row => {
+        calculateRowTotal(row);
+    });
+    
+    // Event listeners para mudanças
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('quantidade-input') || 
+            e.target.classList.contains('valor-unitario-input')) {
+            calculateRowTotal(e.target.closest('.formset-row'));
+        }
+        
+        if (e.target.id === 'id_taxa_imposto') {
+            calculateGrandTotal();
+        }
+        
+        if (e.target.name && e.target.name.includes('-DELETE')) {
+            toggleDeleteRow(e.target);
+        }
+    });
+    
+    document.addEventListener('change', function(e) {
+        if (e.target.classList.contains('item-servico-select')) {
+            updateValorUnitario(e.target);
+        }
+    });
+});
+</script>
 {% endblock %}
 

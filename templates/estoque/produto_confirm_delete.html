@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Exclusão de Produto - Sistema Funerária{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Confirmar Exclusão</h2>
+    <div class="alert alert-warning" role="alert">
+        Tem certeza que deseja excluir o produto "<strong>{{ object.nome }}</strong>"?
+        Esta ação é irreversível.
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+        <a href="{% url 'estoque:produto_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
+
+

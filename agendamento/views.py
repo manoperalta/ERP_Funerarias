@@ -40,3 +40,15 @@ class AgendamentoDeleteView(DeleteView):
     model = Agendamento
     template_name = 'agendamento/agendamento_confirm_delete.html'
     success_url = reverse_lazy('agendamento:list')
+
+
+
+class AgendamentoPublicDetailView(DetailView):
+    """View pública para exibir detalhes de um agendamento com informações do falecido e botões de compartilhamento."""
+    model = Agendamento
+    template_name = 'agendamento/agendamento_detail.html'
+    context_object_name = 'agendamento'
+    slug_field = 'id'
+    slug_url_kwarg = 'pk'
+
+

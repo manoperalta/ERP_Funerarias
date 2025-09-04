@@ -5,43 +5,83 @@
 
 {% block extra_css %}
 <style>
-    .dashboard-card {
-        transition: all 0.3s ease;
-        border: none;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dashboard-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-    .stat-card {
+    .stats-card {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+    .stats-card .icon {
+        font-size: 2.5rem;
+        opacity: 0.8;
+    }
+    .stats-card .value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    .stats-card .label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+    .workflow-step {
+        text-align: center;
+        padding: 20px;
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
+    }
+    .workflow-step:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
+    }
+    .step-number {
+        width: 40px;
+        height: 40px;
+        background: #007bff;
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        font-weight: bold;
+    }
+    .quick-sale-btn {
+        padding: 20px;
+        text-align: center;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        transition: all 0.3s ease;
+    }
+    .quick-sale-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .dashboard-card {
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
     }
     .admin-header {
         background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
         color: white;
-        padding: 2rem 0;
-        margin-bottom: 2rem;
+        padding: 30px 0;
+        margin-bottom: 30px;
     }
-    .quick-action-btn {
-        width: 100%;
-        height: 120px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-decoration: none;
-        border-radius: 10px;
-        transition: all 0.3s ease;
-    }
-    .quick-action-btn:hover {
-        transform: scale(1.05);
-    }
-    .icon-large {
-        font-size: 2.5rem;
-        margin-bottom: 0.5rem;
+    .cargo-badge {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 25px;
+        background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        color: white;
     }
 </style>
 {% endblock %}
@@ -55,7 +95,8 @@
                 <p class="mb-0">Bem-vindo, {{ user.get_full_name|default:user.username }}! Você tem acesso completo ao sistema.</p>
             </div>
             <div class="col-md-4 text-end">
-                <div class="d-flex gap-2 justify-content-end">
+                <div class="d-flex gap-2 justify-content-end align-items-center">
+                    <span class="cargo-badge">Administrador</span>
                     <a href="{% url 'accounts:profile' %}" class="btn btn-outline-light">
                         <i class="bi bi-person-circle"></i> Perfil
                     </a>
@@ -69,156 +110,209 @@
 </div>
 
 <div class="container-fluid">
-    <!-- Estatísticas Rápidas -->
+    <!-- Cards de Estatísticas -->
     <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card stat-card dashboard-card">
-                <div class="card-body text-center">
-                    <i class="bi bi-people icon-large"></i>
-                    <h3>{{ total_funcionarios|default:0 }}</h3>
-                    <p class="mb-0">Funcionários</p>
+        <div class="col-md-2">
+            <div class="stats-card text-center">
+                <div class="icon">
+                    <i class="bi bi-people-fill"></i>
                 </div>
+                <div class="value">{{ total_funcionarios|default:0 }}</div>
+                <div class="label">Funcionários</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card stat-card dashboard-card">
-                <div class="card-body text-center">
-                    <i class="bi bi-heart icon-large"></i>
-                    <h3>{{ total_familias|default:0 }}</h3>
-                    <p class="mb-0">Famílias Atendidas</p>
+        <div class="col-md-2">
+            <div class="stats-card text-center" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="icon">
+                    <i class="bi bi-house-heart"></i>
                 </div>
+                <div class="value">{{ total_familias|default:0 }}</div>
+                <div class="label">Famílias</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card stat-card dashboard-card">
-                <div class="card-body text-center">
-                    <i class="bi bi-calendar-check icon-large"></i>
-                    <h3>{{ total_agendamentos|default:0 }}</h3>
-                    <p class="mb-0">Agendamentos</p>
+        <div class="col-md-2">
+            <div class="stats-card text-center" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="icon">
+                    <i class="bi bi-calendar-event"></i>
                 </div>
+                <div class="value">{{ total_agendamentos|default:0 }}</div>
+                <div class="label">Agendamentos</div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card stat-card dashboard-card">
-                <div class="card-body text-center">
-                    <i class="bi bi-currency-dollar icon-large"></i>
-                    <h3>R$ {{ receita_mensal|default:"0,00" }}</h3>
-                    <p class="mb-0">Receita Mensal</p>
+        <div class="col-md-2">
+            <div class="stats-card text-center" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="icon">
+                    <i class="bi bi-box-seam"></i>
                 </div>
+                <div class="value">{{ total_itens|default:0 }}</div>
+                <div class="label">Itens</div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card text-center" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div class="icon">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div class="value">R$ {{ receitas_mes|floatformat:0|default:"0" }}</div>
+                <div class="label">Receitas Mês</div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card text-center" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
+                <div class="icon">
+                    <i class="bi bi-clipboard-check"></i>
+                </div>
+                <div class="value">{{ servicos_mes|default:0 }}</div>
+                <div class="label">Serviços Mês</div>
             </div>
         </div>
     </div>
 
-    <!-- Ações Rápidas -->
+    <!-- Fluxo de Administração -->
     <div class="row mb-4">
         <div class="col-12">
-            <h3><i class="bi bi-lightning-charge"></i> Ações Rápidas</h3>
-        </div>
-        <div class="col-md-2">
-            <a href="{% url 'funcionario:create' %}" class="quick-action-btn btn btn-primary">
-                <i class="bi bi-person-plus icon-large"></i>
-                <span>Novo Funcionário</span>
-            </a>
-        </div>
-        <div class="col-md-2">
-            <a href="{% url 'familia:create' %}" class="quick-action-btn btn btn-success">
-                <i class="bi bi-people icon-large"></i>
-                <span>Nova Família</span>
-            </a>
-        </div>
-        <div class="col-md-2">
-            <a href="{% url 'pessoa_falecida:create' %}" class="quick-action-btn btn btn-warning">
-                <i class="bi bi-person-x icon-large"></i>
-                <span>Registrar Falecido</span>
-            </a>
-        </div>
-        <div class="col-md-2">
-            <a href="{% url 'agendamento:create' %}" class="quick-action-btn btn btn-info">
-                <i class="bi bi-calendar-plus icon-large"></i>
-                <span>Novo Agendamento</span>
-            </a>
-        </div>
-        <div class="col-md-2">
-            <a href="{% url 'item_servico:create' %}" class="quick-action-btn btn btn-secondary">
-                <i class="bi bi-box icon-large"></i>
-                <span>Novo Item</span>
-            </a>
-        </div>
-        <div class="col-md-2">
-            <a href="{% url 'financeiro:create' %}" class="quick-action-btn btn btn-dark">
-                <i class="bi bi-cash-stack icon-large"></i>
-                <span>Lançamento</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- Módulos do Sistema -->
-    <div class="row">
-        <div class="col-12">
-            <h3><i class="bi bi-grid-3x3-gap"></i> Módulos do Sistema</h3>
+            <h3><i class="bi bi-arrow-right-circle"></i> Fluxo de Administração</h3>
+            <p class="text-muted">Siga os passos para gerenciar o sistema</p>
         </div>
         
-        <!-- Gestão de Pessoas -->
-        <div class="col-md-4 mb-3">
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">1</div>
+                <h6>Cadastrar Funcionário</h6>
+                <a href="{% url 'funcionario:create' %}" class="btn btn-sm btn-primary">
+                    <i class="bi bi-plus"></i> Cadastrar
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">2</div>
+                <h6>Gerenciar Famílias</h6>
+                <a href="{% url 'familia:list' %}" class="btn btn-sm btn-warning">
+                    <i class="bi bi-plus"></i> Gerenciar
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">3</div>
+                <h6>Controlar Estoque</h6>
+                <a href="{% url 'estoque:dashboard' %}" class="btn btn-sm btn-success">
+                    <i class="bi bi-plus"></i> Controlar
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">4</div>
+                <h6>Monitorar Agendamentos</h6>
+                <a href="{% url 'agendamento:list' %}" class="btn btn-sm btn-info">
+                    <i class="bi bi-plus"></i> Monitorar
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">5</div>
+                <h6>Acompanhar Planejamentos</h6>
+                <a href="{% url 'planejamento:list' %}" class="btn btn-sm btn-secondary">
+                    <i class="bi bi-plus"></i> Acompanhar
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-2">
+            <div class="workflow-step">
+                <div class="step-number">6</div>
+                <h6>Controlar Financeiro</h6>
+                <a href="{% url 'financeiro:list' %}" class="btn btn-sm btn-dark">
+                    <i class="bi bi-plus"></i> Controlar
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ações Rápidas de Administração -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h3><i class="bi bi-lightning-charge"></i> Ações Rápidas de Administração</h3>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'funcionario:list' %}" class="quick-sale-btn btn btn-outline-primary w-100">
+                <i class="bi bi-people" style="font-size: 2rem;"></i>
+                <span>Gestão de Funcionários</span>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'item_servico:list' %}" class="quick-sale-btn btn btn-outline-success w-100">
+                <i class="bi bi-box-seam" style="font-size: 2rem;"></i>
+                <span>Catálogo de Produtos</span>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'estoque:dashboard' %}" class="quick-sale-btn btn btn-outline-info w-100">
+                <i class="bi bi-boxes" style="font-size: 2rem;"></i>
+                <span>Controle de Estoque</span>
+            </a>
+        </div>
+        <div class="col-md-3">
+            <a href="{% url 'financeiro:list' %}" class="quick-sale-btn btn btn-outline-warning w-100">
+                <i class="bi bi-currency-dollar" style="font-size: 2rem;"></i>
+                <span>Controle Financeiro</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Gestão de Pessoas -->
+    <div class="row mb-4">
+        <div class="col-md-6">
             <div class="card dashboard-card">
                 <div class="card-header bg-primary text-white">
-                    <h5><i class="bi bi-people"></i> Gestão de Pessoas</h5>
+                    <h5><i class="bi bi-people-fill"></i> Gestão de Pessoas</h5>
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
-                        <a href="{% url 'funcionario:list' %}" class="list-group-item list-group-item-action">
-                            <i class="bi bi-person-badge"></i> Funcionários
+                        <a href="{% url 'funcionario:list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-person-badge"></i> Funcionários</span>
+                            <span class="badge bg-primary rounded-pill">{{ total_funcionarios|default:0 }}</span>
                         </a>
-                        <a href="{% url 'familia:list' %}" class="list-group-item list-group-item-action">
-                            <i class="bi bi-house-heart"></i> Famílias
+                        <a href="{% url 'familia:list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-house-heart"></i> Famílias</span>
+                            <span class="badge bg-warning rounded-pill">{{ total_familias|default:0 }}</span>
                         </a>
-                        <a href="{% url 'pessoa_falecida:list' %}" class="list-group-item list-group-item-action">
-                            <i class="bi bi-person-x"></i> Pessoas Falecidas
+                        <a href="{% url 'pessoa_falecida:list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-person-x"></i> Pessoas Falecidas</span>
+                            <span class="badge bg-danger rounded-pill">{{ total_falecidos|default:0 }}</span>
                         </a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Serviços e Produtos -->
-        <div class="col-md-4 mb-3">
+        <!-- Serviços e Controles -->
+        <div class="col-md-6">
             <div class="card dashboard-card">
                 <div class="card-header bg-success text-white">
-                    <h5><i class="bi bi-box-seam"></i> Serviços e Produtos</h5>
+                    <h5><i class="bi bi-gear-fill"></i> Serviços e Controles</h5>
                 </div>
                 <div class="card-body">
                     <div class="list-group list-group-flush">
-                        <a href="{% url 'item_servico:list' %}" class="list-group-item list-group-item-action">
-                            <i class="bi bi-box"></i> Itens de Serviço
+                        <a href="{% url 'item_servico:list' %}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                            <span><i class="bi bi-box"></i> Itens de Serviço</span>
+                            <span class="badge bg-success rounded-pill">{{ total_itens|default:0 }}</span>
                         </a>
                         <a href="{% url 'servico_contratado:list' %}" class="list-group-item list-group-item-action">
                             <i class="bi bi-clipboard-check"></i> Serviços Contratados
                         </a>
-                        <a href="#" class="list-group-item list-group-item-action">
+                        <a href="{% url 'estoque:dashboard' %}" class="list-group-item list-group-item-action">
                             <i class="bi bi-boxes"></i> Controle de Estoque
-                            <span class="badge bg-warning">Admin</span>
                         </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Operações -->
-        <div class="col-md-4 mb-3">
-            <div class="card dashboard-card">
-                <div class="card-header bg-info text-white">
-                    <h5><i class="bi bi-calendar-event"></i> Operações</h5>
-                </div>
-                <div class="card-body">
-                    <div class="list-group list-group-flush">
-                        <a href="{% url 'agendamento:list' %}" class="list-group-item list-group-item-action">
-                            <i class="bi bi-calendar-check"></i> Agendamentos
-                        </a>
-                        <a href="{% url 'planejamento:list' %}" class="list-group-item list-group-item-action">
-                            <i class="bi bi-diagram-3"></i> Planejamentos
-                        </a>
-                        <a href="{% url 'financeiro:list' %}" class="list-group-item list-group-item-action">
-                            <i class="bi bi-cash-stack"></i> Financeiro
+                        <a href="#" class="list-group-item list-group-item-action">
+                            <i class="bi bi-graph-up"></i> Relatórios
                         </a>
                     </div>
                 </div>
@@ -226,36 +320,134 @@
         </div>
     </div>
 
-    <!-- Relatórios Administrativos -->
-    <div class="row mt-4">
+    <!-- Funcionários Recentes -->
+    <div class="row mb-4">
         <div class="col-12">
             <div class="card dashboard-card">
-                <div class="card-header bg-dark text-white">
-                    <h5><i class="bi bi-graph-up"></i> Relatórios Administrativos</h5>
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-people"></i> Funcionários Recentes</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-3">
-                            <a href="#" class="btn btn-outline-primary w-100 mb-2">
-                                <i class="bi bi-file-earmark-bar-graph"></i> Relatório Mensal
-                            </a>
+                        {% for funcionario in funcionarios_recentes %}
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100">
+                                {% if funcionario.foto_perfil %}
+                                    <img src="{{ funcionario.foto_perfil.url }}" class="card-img-top" alt="{{ funcionario.nome }}" style="height: 150px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'img/default_profile.png' %}" class="card-img-top" alt="Foto Padrão" style="height: 150px; object-fit: cover;">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ funcionario.nome }}</h6>
+                                    <p class="card-text"><small class="text-muted">{{ funcionario.get_cargo_display }}</small></p>
+                                    <a href="{% url 'funcionario:detail' funcionario.pk %}" class="btn btn-sm btn-outline-primary">Ver Detalhes</a>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-3">
-                            <a href="#" class="btn btn-outline-success w-100 mb-2">
-                                <i class="bi bi-currency-dollar"></i> Faturamento
-                            </a>
+                        {% empty %}
+                        <div class="col-12">
+                            <p class="text-center text-muted">Nenhum funcionário encontrado.</p>
                         </div>
-                        <div class="col-md-3">
-                            <a href="#" class="btn btn-outline-info w-100 mb-2">
-                                <i class="bi bi-people"></i> Funcionários
-                            </a>
-                        </div>
-                        <div class="col-md-3">
-                            <a href="#" class="btn btn-outline-warning w-100 mb-2">
-                                <i class="bi bi-boxes"></i> Estoque
-                            </a>
-                        </div>
+                        {% endfor %}
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agendamentos Próximos -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card dashboard-card">
+                <div class="card-header bg-info text-white">
+                    <h5><i class="bi bi-calendar-week"></i> Próximos Agendamentos</h5>
+                </div>
+                <div class="card-body">
+                    {% if agendamentos_proximos %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Data/Hora</th>
+                                        <th>Família</th>
+                                        <th>Serviço</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for agendamento in agendamentos_proximos %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ agendamento.data_agendamento|date:"d/m/Y" }}</strong><br>
+                                            <small class="text-muted">{{ agendamento.hora_agendamento|time:"H:i" }}</small>
+                                        </td>
+                                        <td>{{ agendamento.pessoa_falecida.familia.nome_responsavel }}</td>
+                                        <td>{{ agendamento.local_velorio|truncatechars:30 }}</td>
+                                        <td>
+                                            <span class="badge bg-warning">Agendado</span>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'agendamento:detail' agendamento.pk %}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center text-muted">Nenhum agendamento próximo encontrado.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Campo de Busca -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card dashboard-card">
+                <div class="card-header bg-secondary text-white">
+                    <h5><i class="bi bi-search"></i> Busca Rápida</h5>
+                </div>
+                <div class="card-body">
+                    <form action="" method="GET" class="row g-3 align-items-center">
+                        <div class="col-md-6">
+                            <input type="text" name="search_query" class="form-control" placeholder="Buscar por nome, telefone, CPF/RG..." value="{{ search_query }}">
+                        </div>
+                        <div class="col-md-4">
+                            <select name="search_type" class="form-select">
+                                <option value="familia" {% if search_type == 'familia' %}selected{% endif %}>Famílias</option>
+                                <option value="falecido" {% if search_type == 'falecido' %}selected{% endif %}>Falecidos</option>
+                                <option value="funcionario" {% if search_type == 'funcionario' %}selected{% endif %}>Funcionários</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                        </div>
+                    </form>
+                    {% if search_results %}
+                        <h6 class="mt-4">Resultados da Busca:</h6>
+                        <div class="list-group">
+                            {% for result in search_results %}
+                                <a href="{{ result.url }}" class="list-group-item list-group-item-action d-flex align-items-center">
+                                    {% if result.imagem_url %}
+                                        <img src="{{ result.imagem_url }}" alt="{{ result.name }}" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 1rem; object-fit: cover;">
+                                    {% else %}
+                                        <img src="{% static 'img/default_placeholder.png' %}" alt="Imagem Padrão" style="width: 50px; height: 50px; border-radius: 50%; margin-right: 1rem; object-fit: cover;">
+                                    {% endif %}
+                                    <div>
+                                        <h6>{{ result.name }} ({{ result.type }})</h6>
+                                        <p class="mb-0">{{ result.description }}</p>
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+                    {% elif search_query %}
+                        <p class="mt-4 text-muted">Nenhum resultado encontrado para "{{ search_query }}" em {{ search_type }}.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>

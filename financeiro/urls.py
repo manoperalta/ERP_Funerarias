@@ -9,5 +9,7 @@ urlpatterns = [
     path('novo/', views.FinanceiroCreateView.as_view(), name='create'),
     path('<int:pk>/editar/', views.FinanceiroUpdateView.as_view(), name='update'),
     path('<int:pk>/excluir/', views.FinanceiroDeleteView.as_view(), name='delete'),
+    path('<int:pk>/marcar-pago/', views.marcar_como_pago, name='marcar_pago'),
+    path('<int:pk>/nota-fiscal/', views.visualizar_nota_fiscal, name='nota_fiscal'),
 ]
 

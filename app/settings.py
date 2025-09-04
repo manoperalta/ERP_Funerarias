@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['*']
 
 # CSRF Configuration
 CSRF_TRUSTED_ORIGINS = [
+    'https://8000-iromk8p9g62l6kld0d1f2-8c928002.manusvm.computer',
     'https://8000-icr58gv48vywkqths68ty-cec5ac0c.manusvm.computer',
     'https://8000-ifvbyihjmpvvi1lzq17oz-0ab919fa.manus.computer',
     'https://8001-iqlpwhzc6rn1bgjqquas2-0ab919fa.manus.computer',
@@ -38,6 +39,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://8002-i954r8tn6b77acgqrag7g-cec5ac0c.manusvm.computer',
     'https://8003-i954r8tn6b77acgqrag7g-cec5ac0c.manusvm.computer',
     'https://9000-i954r8tn6b77acgqrag7g-cec5ac0c.manusvm.computer',
+    'https://8000-icvofmimka1wy19rr2p8a-9835d96f.manus.computer',
     'http://localhost:8000',
     'http://localhost:8001',
     'http://localhost:8002',
@@ -48,6 +50,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8002',
     'http://127.0.0.1:8003',
     'http://127.0.0.1:9000',
+    'https://8000-ihg0fzfsx0ilyno9tl3hs-fb44cb1e.manusvm.computer',
+    'https://8000-i0cm74odrdo6m74h8q6qm-d112f64f.manus.computer',
 ]
 
 
@@ -152,6 +156,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -172,4 +180,7 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 # Configurações de mídia para upload de imagens
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
+
 

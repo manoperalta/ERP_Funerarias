@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Confirmar Exclusão de Movimentação - Sistema Funerária{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Confirmar Exclusão</h2>
+    <div class="alert alert-warning" role="alert">
+        Tem certeza que deseja excluir a movimentação de "<strong>{{ object.produto.nome }}</strong>" ({{ object.quantidade }} unidades - {{ object.get_tipo_display }})?
+        Esta ação é irreversível e pode afetar o balanço do estoque.
+    </div>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Confirmar Exclusão</button>
+        <a href="{% url 'estoque:movimentacao_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
+
+

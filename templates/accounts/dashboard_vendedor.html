@@ -5,59 +5,76 @@
 
 {% block extra_css %}
 <style>
-    .dashboard-card {
-        transition: all 0.3s ease;
-        border: none;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    .dashboard-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-    .vendedor-header {
-        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+    .stats-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
-        padding: 2rem 0;
-        margin-bottom: 2rem;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        transition: transform 0.3s ease;
+    }
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+    .stats-card .icon {
+        font-size: 2.5rem;
+        opacity: 0.8;
+    }
+    .stats-card .value {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    .stats-card .label {
+        font-size: 0.9rem;
+        opacity: 0.9;
     }
     .workflow-step {
-        background: white;
-        border-radius: 10px;
-        padding: 1.5rem;
         text-align: center;
-        position: relative;
-        margin-bottom: 1rem;
+        padding: 20px;
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        transition: all 0.3s ease;
     }
-    .workflow-step.completed {
-        background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
-        color: white;
-    }
-    .workflow-step.active {
-        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-        color: white;
+    .workflow-step:hover {
+        border-color: #007bff;
+        background-color: #f8f9fa;
     }
     .step-number {
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
         width: 40px;
         height: 40px;
+        background: #007bff;
+        color: white;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 0 auto 1rem;
+        margin: 0 auto 10px;
         font-weight: bold;
     }
     .quick-sale-btn {
-        height: 100px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
+        padding: 20px;
+        text-align: center;
         border-radius: 10px;
+        margin-bottom: 15px;
         transition: all 0.3s ease;
     }
     .quick-sale-btn:hover {
-        transform: scale(1.05);
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .dashboard-card {
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        margin-bottom: 20px;
+    }
+    .vendedor-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px 0;
+        margin-bottom: 30px;
     }
 </style>
 {% endblock %}
@@ -85,6 +102,64 @@
 </div>
 
 <div class="container-fluid">
+    <!-- Cards de Estatísticas -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <div class="stats-card text-center">
+                <div class="icon">
+                    <i class="bi bi-people-fill"></i>
+                </div>
+                <div class="value">{{ total_familias }}</div>
+                <div class="label">Famílias</div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card text-center" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                <div class="icon">
+                    <i class="bi bi-person-x"></i>
+                </div>
+                <div class="value">{{ total_falecidos }}</div>
+                <div class="label">Falecidos</div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card text-center" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                <div class="icon">
+                    <i class="bi bi-calendar-event"></i>
+                </div>
+                <div class="value">{{ total_agendamentos }}</div>
+                <div class="label">Agendamentos</div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card text-center" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                <div class="icon">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <div class="value">{{ total_itens }}</div>
+                <div class="label">Itens</div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card text-center" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                <div class="icon">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div class="value">R$ {{ receitas_mes|floatformat:0 }}</div>
+                <div class="label">Receitas Mês</div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="stats-card text-center" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); color: #333;">
+                <div class="icon">
+                    <i class="bi bi-clipboard-check"></i>
+                </div>
+                <div class="value">{{ servicos_mes }}</div>
+                <div class="label">Serviços Mês</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Fluxo de Sepultamento -->
     <div class="row mb-4">
         <div class="col-12">
@@ -236,6 +311,41 @@
         </div>
     </div>
 
+    <!-- Itens de Serviço Recentes -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card dashboard-card">
+                <div class="card-header bg-primary text-white">
+                    <h5><i class="bi bi-box"></i> Itens de Serviço Recentes</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for item in itens_servico %}
+                        <div class="col-md-3 mb-3">
+                            <div class="card h-100">
+                                {% if item.imagem %}
+                                    <img src="{{ item.imagem.url }}" class="card-img-top" alt="{{ item.nome }}" style="height: 150px; object-fit: cover;">
+                                {% else %}
+                                    <img src="{% static 'img/default_placeholder.png' %}" class="card-img-top" alt="Imagem Padrão" style="height: 150px; object-fit: cover;">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ item.nome }}</h6>
+                                    <p class="card-text"><small class="text-muted">R$ {{ item.preco_unitario|floatformat:2 }}</small></p>
+                                    <a href="{% url 'item_servico:detail' item.pk %}" class="btn btn-sm btn-outline-primary">Ver Detalhes</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <p class="text-center text-muted">Nenhum item de serviço encontrado.</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Agendamentos Próximos -->
     <div class="row">
         <div class="col-12">
@@ -263,8 +373,8 @@
                                             <strong>{{ agendamento.data_agendamento|date:"d/m/Y" }}</strong><br>
                                             <small class="text-muted">{{ agendamento.hora_agendamento|time:"H:i" }}</small>
                                         </td>
-                                        <td>{{ agendamento.familia.nome_responsavel }}</td>
-                                        <td>{{ agendamento.descricao|truncatechars:30 }}</td>
+                                        <td>{{ agendamento.pessoa_falecida.familia.nome_responsavel }}</td>
+                                        <td>{{ agendamento.local_velorio|truncatechars:30 }}</td>
                                         <td>
                                             <span class="badge bg-warning">Agendado</span>
                                         </td>

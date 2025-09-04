@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard de Estoque - Sistema Funerária{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Dashboard de Estoque</h2>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total de Produtos</h5>
+                    <p class="card-text display-4">{{ total_produtos }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Produtos com Estoque Baixo</h5>
+                    <p class="card-text display-4">{{ produtos_baixo_estoque }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total de Movimentações</h5>
+                    <p class="card-text display-4">{{ total_movimentacoes }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5>Últimas Movimentações</h5>
+                </div>
+                <div class="card-body">
+                    {% if ultimas_movimentacoes %}
+                    <ul class="list-group">
+                        {% for mov in ultimas_movimentacoes %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ mov.produto.nome }} - {{ mov.get_tipo_display }} ({{ mov.quantidade|floatformat:2 }})
+                            <span class="badge bg-secondary">{{ mov.data_movimentacao|date:"d/m/Y H:i" }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="alert alert-info" role="alert">
+                        Nenhuma movimentação recente.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5>Alertas Recentes</h5>
+                </div>
+                <div class="card-body">
+                    {% if alertas_recentes %}
+                    <ul class="list-group">
+                        {% for alerta in alertas_recentes %}
+                        <li class="list-group-item">
+                            <strong>{{ alerta.get_tipo_alerta_display }}:</strong> {{ alerta.mensagem }}
+                            <span class="badge bg-secondary">{{ alerta.data_criacao|date:"d/m/Y H:i" }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <div class="alert alert-info" role="alert">
+                        Nenhum alerta de estoque recente.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a href="{% url 'estoque:produto_list' %}" class="btn btn-outline-primary me-2">Ver Produtos</a>
+        <a href="{% url 'estoque:movimentacao_list' %}" class="btn btn-outline-primary me-2">Ver Movimentações</a>
+        <a href="{% url 'estoque:relatorios' %}" class="btn btn-outline-primary">Ver Relatórios</a>
+    </div>
+
+</div>
+{% endblock %}
+
+

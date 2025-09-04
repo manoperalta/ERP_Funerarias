@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Produtos de Estoque - Sistema Funerária{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Produtos de Estoque</h2>
+        <a href="{% url 'estoque:produto_create' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> Novo Produto
+        </a>
+    </div>
+
+    {% if produtos %}
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Unidade</th>
+                    <th>Preço Custo</th>
+                    <th>Preço Venda</th>
+                    <th>Qtd Atual</th>
+                    <th>Qtd Mínima</th>
+                    <th>Ativo</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for produto in produtos %}
+                <tr>
+                    <td>{{ produto.codigo }}</td>
+                    <td>{{ produto.nome }}</td>
+                    <td>{{ produto.categoria.nome }}</td>
+                    <td>{{ produto.get_unidade_medida_display }}</td>
+                    <td>R$ {{ produto.preco_custo|floatformat:2 }}</td>
+                    <td>R$ {{ produto.preco_venda|floatformat:2 }}</td>
+                    <td>{{ produto.quantidade_atual|floatformat:2 }}</td>
+                    <td>{{ produto.quantidade_minima|floatformat:2 }}</td>
+                    <td>
+                        {% if produto.ativo %}
+                            <span class="badge bg-success">Sim</span>
+                        {% else %}
+                            <span class="badge bg-danger">Não</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'estoque:produto_update' produto.pk %}" class="btn btn-sm btn-warning" title="Editar">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'estoque:produto_delete' produto.pk %}" class="btn btn-sm btn-danger" title="Excluir">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info" role="alert">
+        Nenhum produto de estoque cadastrado ainda.
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+
